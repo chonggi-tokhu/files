@@ -47,6 +47,25 @@
     width: fit-content;
     display: block;
 }
+.rec_choices {
+    max-width: fit-content;
+}
+
+.scroll .rec_choices {
+    height: 25em;
+    overflow-y: scroll;
+}
+
+.rec_choices ul {
+    list-style-type: none;
+    max-width: fit-content;
+}
+
+.rec_choices ul li {
+    border-bottom: 1px solid #0101ff;
+    border-left: 1px solid #0101ff;
+    max-width: fit-content;
+}
 
 .text_inner::-webkit-scrollbar {
     display: none;
