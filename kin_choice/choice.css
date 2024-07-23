@@ -29,6 +29,7 @@
     border-radius: 50%;
 }
 
+
 .choice_comments .comments {
     list-style-type: none;
 }
@@ -57,7 +58,7 @@
 
 .rec_choices {
 
-    width: 40vw;
+    width: 60vw;
 }
 
 .scroll .rec_choices {
@@ -67,12 +68,21 @@
 
 .rec_choices ul {
     list-style-type: none;
-    max-width: fit-content;
 }
 
 .rec_choices ul li {
     border-bottom: 1px solid #0101ff;
     border-left: 1px solid #0101ff;
-    width: 40vw;
+    width: 60vw;
     word-break: break-all;
+}
+
+@media (max-width:700px) {
+    .rec_choices ul li {
+        width: 100vw !important;
+    }
+
+    .rec_choices {
+        width: 100vw !important;
+    }
 }
