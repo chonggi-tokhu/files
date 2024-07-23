@@ -218,15 +218,35 @@
         };
         return rtv;
     };
+    function getElementsByAttrValue(thisobj, attr, value) {
+        if (!(thisobj instanceof HTMLElement)) {
+            return false;
+        }
+        var rtv = [];
+        for (var i = 0; i < thisobj.children.length; i++) {
+            if (thisobj.children.item(i).getAttribute(attr) == value) {
+                rtv[rtv.length] = thisobj.children.item(i);
+
+            };
+            if (thisobj.children.item(i).children.length > 0) {
+                rtv[rtv.length] = getElementsByAttrValue(thisobj.children.item(i), attr, value);
+            };
+        };
+        var rtv2 = returnAllInOneArr(rtv);
+        return rtv2;
+    }
     HTMLElement.prototype.getElementsByAttrValue = function (attr, value) {
         var rtv = [];
         for (var i = 0; i < this.children.length; i++) {
             if (this.children.item(i).getAttribute(attr) == value) {
                 rtv[rtv.length] = this.children.item(i);
-
             };
             if (this.children.item(i).children.length > 0) {
-                rtv[rtv.length] = this.children.item(i).getElementsByAttrValue(attr, value);
+                if (!checkFunc(this.children.item(i).getElementsByAttrValue)) {
+                    rtv[rtv.length] = getElementsByAttrValue(this.children.item(i), attr, value);
+                } else {
+                    rtv[rtv.length] = this.children.item(i).getElementsByAttrValue(attr, value);
+                }
             };
         };
         var rtv2 = returnAllInOneArr(rtv);
