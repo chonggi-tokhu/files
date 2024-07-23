@@ -1,0 +1,57 @@
+.choice_comments .write_comment_form {
+    display: flex;
+}
+
+.choice_comments .write_comment_form .new_comment {
+    border: 1px solid #080808;
+    cursor: text;
+}
+
+.choice_comments .write_comment_form .new_comment.blank::after {
+    content: '댓글 내용을 쓰시면 됩니다';
+    color: grey;
+    cursor: text;
+}
+
+.choice_comments .comment_writer {
+    display: flex;
+}
+
+.choice_main_wrap {
+    position: absolute;
+    left: 20vw;
+    width: 60vw;
+    padding-top: 3em;
+}
+
+.choice_comments .comment_writer .comment_writer_profimg {
+    width: 3rem;
+    border-radius: 50%;
+}
+
+
+.choice_comments .comments {
+    list-style-type: none;
+}
+
+.mosaic {
+    background: #ffffff;
+    filter: url('#textmosaic');
+    width: fit-content;
+    display: inline-block;
+}
+
+.block-mosaic {
+    background: #e3e3e3;
+    filter: url('#mosaic');
+    width: fit-content;
+    display: block;
+}
+
+.text_inner::-webkit-scrollbar {
+    display: none;
+}
+
+.choice_btn_div .choice_btn_centre_text button {
+    border-radius: 0.3rem;
+}
