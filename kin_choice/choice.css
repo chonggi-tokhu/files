@@ -29,7 +29,6 @@
     border-radius: 50%;
 }
 
-
 .choice_comments .comments {
     list-style-type: none;
 }
@@ -47,8 +46,18 @@
     width: fit-content;
     display: block;
 }
+
+.text_inner::-webkit-scrollbar {
+    display: none;
+}
+
+.choice_btn_div .choice_btn_centre_text button {
+    border-radius: 0.3rem;
+}
+
 .rec_choices {
-    max-width: fit-content;
+
+    width: 40vw;
 }
 
 .scroll .rec_choices {
@@ -64,13 +73,6 @@
 .rec_choices ul li {
     border-bottom: 1px solid #0101ff;
     border-left: 1px solid #0101ff;
-    width: 100%;
-}
-
-.text_inner::-webkit-scrollbar {
-    display: none;
-}
-
-.choice_btn_div .choice_btn_centre_text button {
-    border-radius: 0.3rem;
+    width: 40vw;
+    word-break: break-all;
 }
