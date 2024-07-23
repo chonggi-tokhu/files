@@ -79,10 +79,11 @@
 
 @media (max-width:700px) {
     .rec_choices ul li {
-        width: 100vw !important;
+        width: 90vw !important;
     }
 
     .rec_choices {
-        width: 100vw !important;
+        width: 90vw !important;
+        margin-left: 5vw;
     }
 }
