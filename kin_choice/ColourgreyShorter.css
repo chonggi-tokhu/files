@@ -470,7 +470,7 @@ nav.navbar.navbar_custom[data-main-and-sub='sub'] {
     width: fit-content;
 }
 
-.wiki-content a,
+.wiki-content a:not(.notblue):not(.notblue a),
 #preview a {
     color: var(--nblue);
 }
@@ -6374,7 +6374,7 @@ a.docname h1 {
     }
 }
 
-@media (max-width:740px) {
+@media (max-width:800px) {
     .chess-opening-profile {
         width: 90%;
     }
