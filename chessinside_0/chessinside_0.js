@@ -31,6 +31,7 @@ function dec_to_another(dectoconvert, system) {
             if (typeof specialarr2[specialarr[i2]] !== 'number') {
                 for (i4; i4 < specialarr[i2]; i4++) {
                     specialarr2[i4] = 0;
+                    console.log(i4);
                 }
                 specialarr2[specialarr[i2]] = 1;
             } else {
