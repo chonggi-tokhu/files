@@ -73,7 +73,7 @@ function convert(from0, from1, to1) {
 }
 
 var obj = {
-    str: str,
+    str: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     convert: function (from0, from1, to1) {
         if (isNaN(Number(from1)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
             return from0 || false;
