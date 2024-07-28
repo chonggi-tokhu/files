@@ -13,7 +13,7 @@ function dec_to_another(dectoconvert, system) {
             i0 = i;
         }
         callback(i0);
-        if (dec - (16 ** i0) > 0) {
+        if (dec - (special.length ** i0) > 0) {
             return dec_to_alphabets(dec - (special.length ** i0), callback);
         } else {
             return true;
