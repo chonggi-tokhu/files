@@ -1,9 +1,9 @@
 /* 나 영어 잘 못함 */
 function dec_to_another(dectoconvert, system) {
-    var colnumb = (typeof dectoconvert === 'number') ? dectoconvert : 10;
+    var number = (typeof dectoconvert === 'number') ? dectoconvert : 10;
     var special = (typeof system === 'string') ? system : '0123456789ABCDEF';
-    var colnumbstr = '';
-    var specialcols = special.split('');
+    var numberstr = '';
+    var specialnumbs = special.split('');
     function dec_to_alphabets(dec, callback) {
         if (typeof dec !== 'number' || typeof callback !== 'function') {
             return null || false;
@@ -21,7 +21,7 @@ function dec_to_another(dectoconvert, system) {
     }
     var specialarr = [];
     var specialarr2 = [];
-    var bool0 = dec_to_alphabets(colnumb, function (i0param) {
+    var bool0 = dec_to_alphabets(number, function (i0param) {
         specialarr.push(i0param);
     });
     console.log(specialarr);
@@ -39,17 +39,17 @@ function dec_to_another(dectoconvert, system) {
         }
         for (var i3 = 0; i3 < specialarr2.length; i3++) {
             console.log(specialarr2[i3]);
-            colnumbstr = specialcols[specialarr2[i3]] + colnumbstr;
+            numberstr = specialnumbs[specialarr2[i3]] + numberstr;
         }
     }
-    return colnumbstr;
+    return numberstr;
 }
 
 function another_to_dec(numbertoconvert, systemofanother) {
-    var colnumb = (typeof numbertoconvert === 'string') ? numbertoconvert.toUpperCase() : 'A';
+    var number = (typeof numbertoconvert === 'string') ? numbertoconvert.toUpperCase() : 'A';
     var special = (typeof systemofanother === 'string') ? systemofanother : '0123456789ABCDEF';
     var specialarr = special.split('');
-    var newarr = colnumb.split('').reverse();
+    var newarr = number.split('').reverse();
     var rtv = 0;
     newarr.forEach((val, idx, arr) => {
         if (specialarr.indexOf(val) > -1) {
