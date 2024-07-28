@@ -65,20 +65,20 @@ function systemstr(numb, str0) {
     return mystr;
 }
 
-function convert(from0, to0, to1) {
-    if (isNaN(Number(to0)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
+function convert(from0, from1, to1) {
+    if (isNaN(Number(from1)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
         return from0 || false;
     }
-    return dec_to_another(another_to_dec(from0, systemstr(Number(to0), str)), systemstr(Number(to1), str));
+    return dec_to_another(another_to_dec(from0, systemstr(Number(from1), str)), systemstr(Number(to1), str));
 }
 
 var obj = {
     str: str,
-    convert: function (from0, to0, to1) {
-        if (isNaN(Number(to0)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
+    convert: function (from0, from1, to1) {
+        if (isNaN(Number(from1)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
             return from0 || false;
         }
-        return dec_to_another(another_to_dec(from0, systemstr(Number(to0), this.str)), systemstr(Number(to1), this.str));
+        return dec_to_another(another_to_dec(from0, systemstr(Number(from1), this.str)), systemstr(Number(to1), this.str));
     },
     change_numb_letters: function (newstr) {
         this.str = (typeof newstr === 'string') ? newstr : str;

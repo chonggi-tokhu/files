@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>체스인사이드 변환</title>
+    <script src="./chessinside_0.js"></script>
+</head>
+
+<body>
+
+    <input type="text" id="from0" placeholder="변환할 수">
+    <br>
+    <input type="text" id="from1" placeholder="변환하기 전에 몇진수?">
+    <br>
+    <input type="text" id="to1" placeholder="몇진수로 변환?">
+    <br>
+    <button id="convert">변환!</button>
+    <br>
+    <textarea id="after" disabled></textarea>
+    <script>
+        document.getElementById("convert").addEventListener("click", function (ev) {
+            document.getElementById("textarea").value = obj.convert(document.getElementById("from0").value, document.getElementById("from0"), document.getElementById("to1"))
+        });
+    </script>
+</body>
+
+</html>
