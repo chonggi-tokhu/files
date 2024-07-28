@@ -30,8 +30,10 @@ function dec_to_another(dectoconvert, system) {
         for (var i2 = 0; i2 < specialarr.length; i2++) {
             if (typeof specialarr2[specialarr[i2]] !== 'number') {
                 for (i4; i4 < specialarr[i2]; i4++) {
-                    if(typeof specialarr2[i4]!=='number'){specialarr2[i4] = 0;
-                    console.log(i4);}
+                    if (typeof specialarr2[i4] !== 'number') {
+                        specialarr2[i4] = 0;
+                        console.log(i4);
+                    }
                 }
                 specialarr2[specialarr[i2]] = 1;
             } else {
@@ -76,7 +78,7 @@ function convert(from0, from1, to1) {
 var obj = {
     str: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ',
     convert: function (from0, from1, to1) {
-        if (isNaN(Number(from1)) || isNaN(Number(to1)) || !(typeof from0 === 'string')) {
+        if (isNaN(Number(from1)) || isNaN(Number(to1)) || !(typeof from0 === 'string' || from0 instanceof String)) {
             return from0 || false;
         }
         return dec_to_another(another_to_dec(from0, systemstr(Number(from1), this.str)), systemstr(Number(to1), this.str));
