@@ -79,5 +79,8 @@ var obj = {
             return from0 || false;
         }
         return dec_to_another(another_to_dec(from0, systemstr(Number(to0), this.str)), systemstr(Number(to1), this.str));
-    }
+    },
+    change_numb_letters: function (newstr) {
+        this.str = (typeof newstr === 'string') ? newstr : str;
+    },
 }
