@@ -30,8 +30,8 @@ function dec_to_another(dectoconvert, system) {
         for (var i2 = 0; i2 < specialarr.length; i2++) {
             if (typeof specialarr2[specialarr[i2]] !== 'number') {
                 for (i4; i4 < specialarr[i2]; i4++) {
-                    specialarr2[i4] = 0;
-                    console.log(i4);
+                    if(typeof specialarr2[i4]!=='number'){specialarr2[i4] = 0;
+                    console.log(i4);}
                 }
                 specialarr2[specialarr[i2]] = 1;
             } else {
