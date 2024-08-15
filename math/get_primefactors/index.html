@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./script.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="text" id="input" placeholder="계산할 수">
+        <button id="btn">계산! (소인수를 모두 얻거나, 약수를 구합니다)</button>
+        <textarea disabled placeholder="결과" id="output"></textarea>
+    </div>
+    <script>
+        document.getElementById("btn").addEventListener("click", function (ev) {
+            var primefactors = get_primefactors(Number(document.getElementById("input").value));
+            var divisors =/* get_divisors(Number(document.getElementById("input").value))*/'계산 안해요';
+            document.getElementById("output").value = `소인수분해: ${(function () { var rtv = ''; for (var i = 0; i < primefactors.length; i++) { rtv += (i == primefactors.length - 1) ? primefactors[i] : primefactors[i] + '×' } return rtv; })()} \n 약수: ${divisors}`;
+        });
+    </script>
+</body>
+
+</html>
