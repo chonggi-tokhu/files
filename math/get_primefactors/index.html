@@ -17,7 +17,7 @@
     <script>
         document.getElementById("btn").addEventListener("click", function (ev) {
             var primefactors = get_primefactors(Number(document.getElementById("input").value));
-            var divisors =/* get_divisors(Number(document.getElementById("input").value))*/'계산 안해요';
+            var divisors =/* get_divisors(Number(document.getElementById("input").value))*/'약수 구하기는 너무 오래걸려서 계산 안해요. \n 굳이 구하고 싶다면 자바스크립트 콘솔에 get_divisors(약수를 구할 수)를 입력하세요.';
             document.getElementById("output").value = `소인수분해: ${(function () { var rtv = ''; for (var i = 0; i < primefactors.length; i++) { rtv += (i == primefactors.length - 1) ? primefactors[i] : primefactors[i] + '×' } return rtv; })()} \n 약수: ${divisors}`;
         });
     </script>
