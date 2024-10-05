@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>edit video</title>
+    <script src="./src/js/mp4box.all.js"></script>
+    <script src="./src/js/mp4wasm.js"></script>
+    <script src="./src/js/editor/to_mp4.js"></script>
+    <script src="./src/js/editor/video_editor/index.js"></script>
+</head>
+
+<body>
+    <div>
+        <input type="file" id="myfile">
+        <video src="" id="myvideo"></video>
+    </div>
+    <script>
+        var editor = null;
+        var n_blob2;
+        document.getElementsByTagName("input")[0].addEventListener("change", function (ev) {
+            document.getElementById("myvideo").src = URL.createObjectURL(new Blob([this.files[0]], { type: "video/" + this.files[0].name.split('.')[this.files[0].name.split('.').length - 1] }));
+            editor = new video_editor(document.getElementById("myvideo"), { width: 1280, height: 720, frames: 25 });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,448 @@
+
+const VIDEO_TIMESCALE = 90000;
+const AUDIO_TIMESCALE = 48000;
+
+async function reencode(file) {
+    const startNow = performance.now();
+
+    let videoDecoder;
+    let videoEncoder;
+
+    let videoTrack = null;
+    let audioTrack = null;
+    let decodedVideoFrameIndex = 0;
+    let encodedVideoFrameIndex = 0;
+    let videoFrameCount = 0;
+    let audioFrameCount = 0;
+    let decodedAudioFrameIndex = 0;
+    let encodedAudioFrameIndex = 0;
+    let nextVideoKeyFrameTimestamp = 0;
+    let nextAudioKeyFrameTimestamp = 0;
+    let sampleVideoDurations = [];
+    let videoTrak = null;
+    let audioTrak = null;
+
+    const mp4boxOutputFile = createMP4File();
+    const mp4boxInputFile = MP4Box.createFile();
+    mp4boxInputFile.onError = error => console.error(error);
+    mp4boxInputFile.onReady = async (info) => {
+        videoTrack = info.videoTracks[0];
+        audioTrack = info.audioTracks[0];
+
+        if (videoTrack) {
+            videoDecoder = new VideoDecoder({
+                async output(inputFrame) {
+                    const bitmap = await createImageBitmap(inputFrame);
+
+                    const outputFrame = new VideoFrame(bitmap, {
+                        timestamp: inputFrame.timestamp,
+                    });
+
+                    const keyFrameEveryHowManySeconds = 2;
+                    let keyFrame = false;
+                    if (inputFrame.timestamp >= nextVideoKeyFrameTimestamp) {
+                        keyFrame = true;
+                        nextVideoKeyFrameTimestamp = inputFrame.timestamp + keyFrameEveryHowManySeconds * 1e6;
+                    }
+                    videoEncoder.encode(outputFrame, { keyFrame });
+                    inputFrame.close();
+                    outputFrame.close();
+
+                    decodedVideoFrameIndex++;
+                },
+                error(error) {
+                    console.error(error);
+                }
+            });
+
+            let description;
+            const trak = mp4boxInputFile.getTrackById(videoTrack.id);
+            for (const entry of trak.mdia.minf.stbl.stsd.entries) {
+                if (entry.avcC || entry.hvcC) {
+                    const stream = new DataStream(undefined, 0, DataStream.BIG_ENDIAN);
+                    if (entry.avcC) {
+                        entry.avcC.write(stream);
+                    } else {
+                        entry.hvcC.write(stream);
+                    }
+                    description = new Uint8Array(stream.buffer, 8); // Remove the box header.
+                    break;
+                }
+            }
+
+            videoDecoder.configure({
+                codec: videoTrack.codec,
+                codedWidth: videoTrack.track_width,
+                codedHeight: videoTrack.track_height,
+                hardwareAcceleration: 'prefer-hardware',
+                description,
+            });
+
+            videoEncoder = new VideoEncoder({
+                output(chunk, metadata) {
+                    let uint8 = new Uint8Array(chunk.byteLength);
+                    chunk.copyTo(uint8);
+
+                    if (videoTrak === null) {
+                        videoTrak = addTrak(
+                            mp4boxOutputFile,
+                            {
+                                type: 'video',
+                                width: videoTrack.track_width,
+                                height: videoTrack.track_height,
+                                avcDecoderConfigRecord: metadata.decoderConfig.description,
+                            }
+                        );
+                    }
+
+                    const sampleDuration = sampleVideoDurations.shift() / (1_000_000 / VIDEO_TIMESCALE);
+                    addSample(
+                        mp4boxOutputFile,
+                        videoTrak,
+                        uint8,
+                        chunk.type === 'key',
+                        sampleDuration,
+            /* addDuration */ true,
+                    );
+
+                    encodedVideoFrameIndex++;
+                },
+                error(error) {
+                    console.error(error);
+                }
+            });
+
+            videoEncoder.configure({
+                codec: 'avc1.4d0034',
+                width: videoTrack.track_width,
+                height: videoTrack.track_height,
+                hardwareAcceleration: 'prefer-hardware',
+                bitrate: 14_000_000,
+                alpha: 'discard',
+                bitrateMode: 'variable',
+                latencyMode: 'realtime',
+            });
+
+            mp4boxInputFile.setExtractionOptions(videoTrack.id, null, { nbSamples: Infinity });
+        }
+
+        if (audioTrack) {
+            audioDecoder = new AudioDecoder({
+                async output(audioData) {
+                    audioEncoder.encode(audioData, { keyFrame: true });
+                    audioData.close();
+
+                    decodedAudioFrameIndex++;
+                },
+                error(error) {
+                    console.error(error);
+                }
+            });
+
+            const audioCodec = 'mp4a.40.02';
+
+            audioDecoder.configure({
+                codec: audioCodec, //audioTrack.codec,
+                numberOfChannels: audioTrack.audio.channel_count,
+                sampleRate: audioTrack.audio.sample_rate,
+            });
+
+            audioEncoder = new AudioEncoder({
+                output(chunk, metadata) {
+                    let uint8 = new Uint8Array(chunk.byteLength);
+                    chunk.copyTo(uint8);
+
+                    if (audioTrak === null) {
+                        audioTrak = addTrak(
+                            mp4boxOutputFile,
+                            {
+                                type: 'audio',
+                            }
+                        );
+                    }
+
+                    const sampleDuration = 21333.3333333 / (1_000_000 / AUDIO_TIMESCALE);
+                    addSample(
+                        mp4boxOutputFile,
+                        audioTrak,
+                        uint8,
+                        chunk.type === 'key',
+                        sampleDuration,
+            /* addDuration */ !videoTrack,
+                    );
+
+                    encodedAudioFrameIndex++;
+                },
+                error(error) {
+                    console.error(error);
+                }
+            });
+
+            audioEncoder.configure({
+                codec: audioCodec,
+                numberOfChannels: audioTrack.audio.channel_count,
+                sampleRate: audioTrack.audio.sample_rate,
+            });
+
+            mp4boxInputFile.setExtractionOptions(audioTrack.id, null, { nbSamples: Infinity });
+        }
+
+        mp4boxInputFile.start();
+    };
+
+
+    mp4boxInputFile.onSamples = function (track_id, ref, samples) {
+        for (const sample of samples) {
+            const chunk = {
+                type: sample.is_sync ? "key" : "delta",
+                timestamp: sample.cts * 1_000_000 / sample.timescale,
+                duration: sample.duration * 1_000_000 / sample.timescale,
+                data: sample.data
+            };
+            if (videoTrack && track_id === videoTrack.id) {
+                videoFrameCount++;
+                sampleVideoDurations.push(sample.duration * 1_000_000 / sample.timescale);
+                videoDecoder.decode(new EncodedVideoChunk(chunk));
+            } else {
+                audioFrameCount++;
+                audioDecoder.decode(new EncodedAudioChunk(chunk));
+            }
+        }
+    }
+
+    async function onComplete() {
+        console.log(mp4boxOutputFile)
+        mp4boxOutputFile.save("mp4manual.mp4");
+
+        const seconds = (performance.now() - startNow) / 1000;
+    };
+
+    var reader = new FileReader();
+    reader.onload = async function () {
+        this.result.fileStart = 0;
+        mp4boxInputFile.appendBuffer(this.result);
+        mp4boxInputFile.flush();
+
+        if (videoTrack) {
+            await videoDecoder.flush();
+            videoDecoder.close();
+        }
+        if (audioTrack) {
+            await audioDecoder.flush();
+            audioDecoder.close();
+        }
+
+        if (videoTrack) {
+            await videoEncoder.flush();
+            videoEncoder.close();
+        }
+        if (audioTrack) {
+            await audioEncoder.flush();
+            audioEncoder.close();
+        }
+
+        onComplete();
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+
+function createMP4File() {
+    const mp4File = new ISOFile();
+
+    const ftyp = mp4File.add("ftyp")
+        .set("major_brand", "mp42")
+        .set("minor_version", 0)
+        .set("compatible_brands", ["mp42", "isom"]);
+
+    const free = mp4File.add("free");
+
+    const mdat = mp4File.add("mdat");
+    mp4File.mdat = mdat;
+    mdat.parts = [];
+    mdat.write = function (stream) {
+        this.size = this.parts.map(part => part.byteLength).reduce((a, b) => a + b, 0);
+        this.writeHeader(stream);
+        this.parts.forEach(part => {
+            stream.writeUint8Array(part);
+        });
+    }
+
+    const moov = mp4File.add("moov");
+
+    const mvhd = moov.add("mvhd")
+        .set("timescale", 1000)
+        .set("rate", 1 << 16)
+        .set("creation_time", 0)
+        .set("modification_time", 0)
+        .set("duration", 0)
+        .set("volume", 1)
+        .set("matrix", [
+            1 << 16, 0, 0, //
+            0, 1 << 16, 0, //
+            0, 0, 0x40000000
+        ])
+        .set("next_track_id", 1);
+
+    return mp4File;
+}
+
+function addTrak(mp4File, config) {
+    const isVideo = config.type === "video";
+    const moov = mp4File.moov;
+    const trak = moov.add("trak");
+
+    const id = moov.mvhd.next_track_id;
+    moov.mvhd.next_track_id++;
+
+    const tkhd = trak.add("tkhd")
+        .set("flags",
+            BoxParser.TKHD_FLAG_ENABLED |
+            BoxParser.TKHD_FLAG_IN_MOVIE |
+            BoxParser.TKHD_FLAG_IN_PREVIEW
+        )
+        .set("creation_time", 0)
+        .set("modification_time", 0)
+        .set("track_id", id)
+        .set("duration", 0)
+        .set("layer", 0)
+        .set("alternate_group", 0)
+        .set("volume", 1)
+        .set("matrix", [
+            1 << 16, 0, 0, //
+            0, 1 << 16, 0, //
+            0, 0, 0x40000000
+        ])
+        .set("width", (config.width || 0) << 16)
+        .set("height", (config.height || 0) << 16);
+
+    const mdia = trak.add("mdia");
+
+    const mdhd = mdia.add("mdhd")
+        .set("creation_time", 0)
+        .set("modification_time", 0)
+        .set("timescale", isVideo ? VIDEO_TIMESCALE : AUDIO_TIMESCALE)
+        .set("duration", 0)
+        .set("language", 21956)
+        .set("languageString", "und");
+
+    const hdlr = mdia.add("hdlr")
+        .set("handler", isVideo ? "vide" : "soun")
+        .set("name", "");
+
+    const minf = mdia.add("minf");
+
+    if (isVideo) {
+        const vmhd = minf.add("vmhd")
+            .set("graphicsmode", 0)
+            .set("opcolor", [0, 0, 0]);
+    } else {
+        const smhd = minf.add("smhd")
+            .set("flags", 1)
+            .set("balance", 0);
+    }
+
+    const dinf = minf.add("dinf");
+    const url = new BoxParser["url Box"]()
+        .set("flags", 0x1);
+    const dref = dinf.add("dref")
+        .addEntry(url);
+
+    var stbl = minf.add("stbl");
+
+    if (isVideo) {
+        const sample_description_entry = new BoxParser.avc1SampleEntry();
+        sample_description_entry.data_reference_index = 1;
+        sample_description_entry
+            .set("width", config.width || 0)
+            .set("height", config.height || 0)
+            .set("horizresolution", 0x48 << 16)
+            .set("vertresolution", 0x48 << 16)
+            .set("frame_count", 1)
+            .set("compressorname", "")
+            .set("depth", 0x18);
+
+        var avcC = new BoxParser.avcCBox();
+        var stream = new MP4BoxStream(config.avcDecoderConfigRecord);
+        avcC.parse(stream);
+        sample_description_entry.addBox(avcC);
+
+        const stsd = stbl.add("stsd")
+            .addEntry(sample_description_entry);
+    } else {
+        var mp4a = new BoxParser.mp4aSampleEntry()
+            .set("data_reference_index", 1)
+            .set("channel_count", 1)
+            .set("samplesize", 16)
+            .set("samplerate", 48000);
+
+        const stsd = stbl.add("stsd")
+            .addEntry(mp4a);
+    }
+
+    const stts = stbl.add("stts")
+        .set("sample_counts", [])
+        .set("sample_deltas", []);
+
+    if (isVideo) {
+        const stss = stbl.add("stss")
+            .set("sample_numbers", [])
+    }
+
+    const stsc = stbl.add("stsc")
+        .set("first_chunk", [1])
+        .set("samples_per_chunk", [1])
+        .set("sample_description_index", [1]);
+
+    const stsz = stbl.add("stsz")
+        .set("sample_sizes", []);
+
+    const stco = stbl.add("stco")
+        .set("chunk_offsets", []);
+
+    return trak;
+}
+
+let isFirstVideoSample = true;
+let chunkOffset = 40;
+function addSample(mp4File, trak, data, isSync, duration, addDuration) {
+    const isVideo = trak.mdia.hdlr.handler === 'vide';
+
+    if (isFirstVideoSample && isVideo) {
+        isFirstVideoSample = false;
+        const headerSize = 4 + data[0] << 24 + data[1] << 16 + data[2] << 8 + data[3];
+        data = data.slice(headerSize);
+    }
+
+    mp4File.mdat.parts.push(data);
+
+    const scaledDuration = duration / (isVideo ? VIDEO_TIMESCALE : AUDIO_TIMESCALE) * 1000;
+    trak.samples_duration += scaledDuration;
+    trak.tkhd.duration += scaledDuration;
+    trak.mdia.mdhd.duration += duration;
+    if (addDuration) {
+        mp4File.moov.mvhd.duration += scaledDuration;
+    }
+
+    const stbl = trak.mdia.minf.stbl;
+
+    let index = stbl.stts.sample_deltas.length - 1;
+    if (stbl.stts.sample_deltas[index] !== duration) {
+        stbl.stts.sample_deltas.push(duration);
+        stbl.stts.sample_counts.push(1);
+    } else {
+        stbl.stts.sample_counts[index]++;
+    }
+
+    if (isVideo && isSync) {
+        stbl.stss.sample_numbers.push(
+            stbl.stts.sample_counts.reduce((a, b) => a + b)
+        );
+    }
+
+    stbl.stco.chunk_offsets.push(chunkOffset);
+    chunkOffset += data.byteLength;
+
+    stbl.stsz.sample_sizes.push(data.byteLength);
+    stbl.stsz.sample_count++;
+}
