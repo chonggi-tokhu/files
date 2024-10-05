@@ -8,13 +8,14 @@
     <script src="./mp4box.all.js"></script>
     <script src="./mp4wasm.js"></script>
     <script src="./to_mp4.js"></script>
-    <script src="./video_editor/index.js"></script>
+    <script src="./index.js"></script>
 </head>
 
 <body>
     <div>
         <input type="file" id="myfile">
         <video src="" id="myvideo"></video>
+        <button onclick="editor.download_video();"></button>
     </div>
     <script>
         var editor = null;
