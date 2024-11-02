@@ -1,3 +1,27 @@
+function get_sum_of_each_digit_of_a_number(numb){
+    var digits = new String(numb).split('');
+    var rtv=false;
+    var specialrtv=0;
+    for (var i=0;i<digits.length;i++){
+        specialrtv+=Number(digits[i]);
+        if(i===digits.length-1){
+            rtv=specialrtv;
+        }
+    }
+    return rtv;
+}
+
+var help_the_machine_to_calculate_easily_and_quickly = {
+    fast_factorisation:[
+        {numb:2, numbs:[2], calcfunc:function(numb){return (numb%2===0); } },
+        {numb:5, numbs:[5], calcfunc:function(numb){return (new String(numb).endsWith('5'));}},
+        {numb:10, numbs:[2,5], calcfunc:function(numb){return (new String(numb).endsWith('0'));}},
+        {numb:3, numbs:[3], calcfunc:function(numb){return (get_sum_of_each_digit_of_a_number(numb) % 3===0); }},
+        {numb:4, numbs:[2,2], calcfunc:function(numb){var nstr= new String(numb); Number(nstr.substring(nstr.length-2,str.length))%4===0}},
+    ],
+    
+}
+var numbs1=[[],[2],[3],[2,2],[5],[2,3],[7],[2,2,2],[3,3],[2,5],[11],[2,2,3],[13],[2,7],[3,5],[2,2,2,2],[17],[2,3,3],[19],[2,2,5],[3,7],[2,11],[23],[2,2,2,3],[5,5],[2,13],[3,3,3],[2,2,7],[29],[2,3,5],[31],[2,2,2,2,2],[3,11],[2,17],[5,7],[2,2,3,3],[37],[2,19],[3,13],[2,2,2,5],[41],[2,3,7],[43],[2,2,11],[3,3,5],[2,23],[47],[2,2,2,2,3],[7,7],[2,5,5],[3,17],[2,2,13],[53],[2,3,3,3],[5,11],[2,2,2,7],[3,19],[2,29],[59],[2,2,3,5],[61],[2,31],[3,3,7],[2,2,2,2,2,2],[5,13],[2,3,11],[67],[2,2,17],[3,23],[2,5,7],[71],[2,2,2,3,3],[73],[2,37],[3,5,5],[2,2,19],[7,11],[2,3,13],[79],[2,2,2,2,5],[3,3,3,3],[2,41],[83],[2,2,3,7],[5,17],[2,43],[3,29],[2,2,2,11],[89],[2,3,3,5],[7,13],[2,2,23],[3,31],[2,47],[5,19],[2,2,2,2,2,3],[97],[2,7,7],[3,3,11],[2,2,5,5]];
 function check_if_the_type_of_a_v_is_number(a_v) {
     return typeof a_v === 'number';
 }
@@ -92,6 +116,12 @@ function get_primefactors(numb_1) {
     var currnumb = 1;
     console.log(numb_1 / 2 + 2);
     for (var i = 2; currnumb < numb_1; i) {
+        if((numb_1/currnumb)<=100){
+            rtarrpr.push(numbs1[(numb_1/currnumb)-1]);
+            rtarrpr=rtarrpr.flat(1);
+            currnumb=numb_1;
+            break;
+        }
         if ((numb_1 / currnumb) % i === 0) {
             rtarrpr.push(i);
             currnumb = currnumb * i;
