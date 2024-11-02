@@ -117,7 +117,7 @@ function get_primefactors(numb_1) {
     //console.log(numb_1 / 2 + 2);
     for (var i = 2; currnumb < numb_1; i) {
         if((numb_1/currnumb)<=121){
-            console.log(numbs1[(numb_1/currnumb)-1])
+            //console.log(numbs1[(numb_1/currnumb)-1])
             rtarrpr.push(numbs1[(numb_1/currnumb)-1]);
             rtarrpr=rtarrpr.flat(1);
             currnumb=numb_1;
