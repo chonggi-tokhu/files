@@ -114,7 +114,7 @@ function get_primefactors(numb_1) {
         return [numb_1];
     }
     var currnumb = 1;
-    console.log(numb_1 / 2 + 2);
+    //console.log(numb_1 / 2 + 2);
     for (var i = 2; currnumb < numb_1; i) {
         if((numb_1/currnumb)<=100){
             rtarrpr.push(numbs1[(numb_1/currnumb)-1]);
@@ -125,11 +125,11 @@ function get_primefactors(numb_1) {
         if ((numb_1 / currnumb) % i === 0) {
             rtarrpr.push(i);
             currnumb = currnumb * i;
-            console.log(i);
+            //console.log(i);
         } else if ((numb_1 / currnumb) / i !== 1) {
             var speciali = next_primenumber(i, (numb_1 % 1 === 0) ? (numb_1 / 2) + 2 : (numb_1 + 1) / 2 + 2);
             if (!check_integer(speciali)) {
-                console.log(speciali, i);
+                //console.log(speciali, i);
                 rtarrpr = false;
                 break;
             } else {
@@ -159,7 +159,7 @@ function get_primefactors_with_e(numb_1) {
         var numbtopush = (!check_integer(rtarrpr[i0])) ? 0 : rtarrpr[i0];
         rtarr.push(numbtopush);
     }
-    console.log(rtarr);
+    //console.log(rtarr);
     return rtarr;
 }
 function get_divisors(numb_1) {
