@@ -1051,7 +1051,7 @@ button.dark_mode[data-btn-checked='true']::after {
 }
 
 .tabs_wrapper .tab_select .select {
-    border-width: 0.1em;
+    /*border-width: 0.1em;*/
     font-weight: normal;
     padding: 0.2em;
 }
@@ -1088,7 +1088,7 @@ button.dark_mode[data-btn-checked='true']::after {
 
 .tabs_wrapper .tab_select .select.showntabselect {
     font-weight: bold !important;
-    border-width: 0.45em !important;
+    /*border-width: 0.45em !important;*/
     padding: 0.15em !important;
     vertical-align: middle;
     margin-top: calc(var(--cgr-basic-unit) * -0.2) !important;
