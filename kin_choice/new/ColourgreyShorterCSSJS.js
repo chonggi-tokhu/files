@@ -610,7 +610,7 @@
                                             thisobj.tabs_and_tabselects.push({ tab: thisobj.tabs[idx], tabselect: thisobj.tabselects[idx], shown: false });
                                         });
                                         this.tabs_and_tabselects.forEach(function (val, idx, arr) {
-                                            val.tabselect.addEventListener("click", function (ev) { var index = (!val.tabselect.getAttribute("data-tabselect-number") || val.tabselect.getAttribute("data-tabselect-number") == '' || val.tab_select_group.getAttribute("data-tabselect-number") == null) ? idx : new String(val.tabselect.getAttribute("data-tabselect-number")); thisobj.showtab(index); });
+                                            val.tabselect.addEventListener("click", function (ev) { var index = (!val.tabselect.getAttribute("data-tabselect-number") || val.tabselect.getAttribute("data-tabselect-number") == '' || val.tabselect.getAttribute("data-tabselect-number") == null) ? idx : new String(val.tabselect.getAttribute("data-tabselect-number")); thisobj.showtab(index); });
                                         });
                                     }
                                 }
