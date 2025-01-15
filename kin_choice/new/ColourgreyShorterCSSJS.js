@@ -675,7 +675,7 @@
                                                             thisobj.shorterarr[idx].shown = false;
                                                         }
                                                     } else {
-                                                        thisobj.pr.showtab(val.tab, val.tabselect, t);
+                                                        thisobj.pr.showtab(val.tab, val.tabselect, thisobj);
                                                         arr[idx].shown = true;
                                                         val.shown = true;
                                                         thisobj.shorterarr[idx].shown = true;
