@@ -687,6 +687,8 @@
                                                     val.shown = false;
                                                     thisobj.shorterarr[idx].shown = false;
                                                 }
+                                            } else {
+                                                console.log(typeof index);
                                             }
                                         }
                                     }
