@@ -1382,6 +1382,7 @@ select:disabled {
     display: none !important;
 }
 
+
 [type=button],
 [type=reset],
 [type=submit],
@@ -6139,6 +6140,21 @@ splitel.darkcolour {
     --hljs-attr-colour: #30f090 !important;
     --hljs-colour: #ffd4ff !important;
     --hljs-bg-colour: #16183d !important;
+    --hljs-tag-colour: #845734 !important;
+    --hljs-name-colour: #5858f8 !important;
+    --hljs-comment-colour: #50c050 !important;
+    --hljs-keyword-colour: #4150bd !important;
+}
+
+.wiki.code[code-theme='Colourgrey-light'],
+.wiki.code[code-theme='Colourgrey-light'] * {
+    --hljs-string-colour: #b73439 !important;
+    --hljs-section-colour: #ff9f9f !important;
+    --hljs-funcname-colour: #8230a4 !important;
+    --hljs-langvar-colour: #6bf !important;
+    --hljs-attr-colour: #30f090 !important;
+    --hljs-colour: #220422 !important;
+    --hljs-bg-colour: #bcdeef !important;
     --hljs-tag-colour: #845734 !important;
     --hljs-name-colour: #5858f8 !important;
     --hljs-comment-colour: #50c050 !important;
