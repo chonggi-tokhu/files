@@ -6159,6 +6159,7 @@ splitel.darkcolour {
     --hljs-name-colour: #5858f8 !important;
     --hljs-comment-colour: #50c050 !important;
     --hljs-keyword-colour: #4150bd !important;
+    padding: none !important;
 }
 
 .hljs-string,
