@@ -645,7 +645,7 @@
 
                                             console.log(index);
                                             if (checkNumber(index)) {
-                                                if (idx == index) {
+                                                if (val.tab.getAttribute("data-tab-number") == new String(index) || idx == index) {
                                                     if (val.tab.classList.contains("showntab") && val.tabselect.classList.contains("showntabselect")) {
                                                         if (!thisobj.oneofthemisshownalways) {
                                                             thisobj.pr.hidetab(val.tab, val.tabselect, thisobj);
@@ -666,7 +666,8 @@
                                                     thisobj.shorterarr[idx].shown = false;
                                                 }
                                             } else if (typeof index == 'string') {
-                                                if (val.tab.getAttribute("data-tab-number") == index) {
+                                                console.log('debugging');
+                                                if (val.tab.getAttribute("data-tab-number") == index || idx == Number(index)) {
                                                     if (val.tab.classList.contains("showntab") && val.tabselect.classList.contains("showntabselect")) {
                                                         if (!thisobj.oneofthemisshownalways) {
                                                             thisobj.pr.hidetab(val.tab, val.tabselect, thisobj);
