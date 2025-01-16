@@ -25,7 +25,7 @@ function getCaretCharacterOffsetWithin(element) {
     }
     return caretOffset;
 }
-document.getElementById("content").addEventListener("keyup", function (ev) {
+document.getElementById("content").addEventListener("input", function (ev) {
     document.getElementById("hiddeninput").value = htmlfunc(document.getElementById("content").innerText);
     if (document.getElementById("content").innerText == "") {
         document.getElementById("content").classList.add("withplaceholder");
