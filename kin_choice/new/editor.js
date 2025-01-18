@@ -1,6 +1,6 @@
 function htmlfunc(str) {
     var string = new String(str);
-    return string.replaceAll(`&quot;`, `"`).replaceAll(`&apos;`, `'`)./*replaceAll(`&lt;`, `<`).replaceAll(`&gt;`, `>`).replaceAll(`&gt;`, `>`)*/.replaceAll(`[br]`, `\n`);
+    return string.replaceAll(`&quot;`, `"`).replaceAll(`&apos;`, `'`)/*.replaceAll(`&lt;`, `<`).replaceAll(`&gt;`, `>`).replaceAll(`&gt;`, `>`)*/.replaceAll(`[br]`, `\n`);
 }
 function getCaretCharacterOffsetWithin(element) {
     var caretOffset = 0;
