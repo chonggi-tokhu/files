@@ -1127,6 +1127,105 @@ button.dark_mode[data-btn-checked='true']::after {
     display: block !important;
 }
 
+.btn-group.split.gap-bottom>.btn:first-child {
+    border-top-left-radius: 0px !important;
+}
+
+.btn-group.split.gap-bottom>.btn:last-child {
+    border-top-right-radius: 0px !important;
+}
+
+.btn-group.split.gap-top>.btn:first-child {
+    border-bottom-left-radius: 0px !important;
+}
+
+.btn-group.split.gap-top>.btn:last-child {
+    border-bottom-right-radius: 0px !important;
+}
+
+.gap-top {
+    --margin-bottom: 0.08em;
+    margin-bottom: calc(var(--margin-bottom));
+}
+
+.gap-bottom {
+    --margin-top: 0.08em;
+    margin-top: calc(var(--margin-top));
+}
+
+.split.gap-top {
+    --margin-bottom: 0.04em !important;
+    margin-bottom: calc(var(--margin-bottom));
+}
+
+.split.gap-bottom {
+    --margin-top: 0.04em !important;
+    margin-top: calc(var(--margin-top));
+}
+
+.wiki.table {
+    display: block;
+    --cgr-wiki-table-border: 1px solid #050505;
+    --cgr-wiki-table-row-border: none;
+}
+
+.wiki.table div.wiki.table_row {
+    display: flex;
+    --cgr-wiki-table-border: inherit;
+    --cgr-wiki-table-row-border: inherit;
+    border: var(--cgr-wiki-table-row-border);
+}
+
+.wiki.table div.wiki.table_row div.wiki.table_col {
+    display: block;
+    --cgr-wiki-table-border: inherit;
+    border: var(--cgr-wiki-table-border);
+}
+
+.wiki.folding .folding_control {
+    margin-bottom: 0.08em !important;
+}
+
+.wiki.folding .folding_content.shown_folder_content {
+    margin-top: 0.08em !important;
+    padding-top: 0.08em !important;
+}
+
+.folding .folding_content:not(.shown_folder_content) {
+    display: none;
+}
+
+.folding .folding_control {
+    cursor: pointer;
+}
+
+.wiki.folding {
+    margin-bottom: 0.5em;
+}
+
+.mymenu {
+    margin-left: 1rem;
+}
+
+a.docname {
+    color: #404040;
+    display: inline-block;
+}
+
+a.docname h1 {
+    width: fit-content;
+}
+
+:not([data-stroke-hidden="true"]) .text_stroke_through {
+    text-decoration: line-through;
+    color: grey !important;
+}
+
+:not([data-stroke-hidden="true"]) .text_stroke_through a:not(:hover),
+:not([data-stroke-hidden="true"]) .text_stroke_through a:not(:focus) {
+    color: grey !important;
+}
+
 html {
     font-family: sans-serif;
     -webkit-text-size-adjust: 100%;
