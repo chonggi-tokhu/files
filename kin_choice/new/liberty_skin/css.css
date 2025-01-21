@@ -1203,9 +1203,6 @@ button.dark_mode[data-btn-checked='true']::after {
     margin-bottom: 0.5em;
 }
 
-.mymenu {
-    margin-left: 1rem;
-}
 
 a.docname {
     color: #404040;
