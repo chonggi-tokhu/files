@@ -6367,6 +6367,11 @@ a.docname h1 {
 
 :not([data-stroke-hidden="true"]) .text_stroke_through {
     text-decoration: line-through;
+    color: grey;
+}
+
+:not([data-stroke-hidden="true"]) .text_stroke_through.forced, :not([data-stroke-hidden="true"]) .text_stroke_through.forced a {
+    text-decoration: line-through;
     color: grey !important;
 }
 
