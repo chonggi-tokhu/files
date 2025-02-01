@@ -1,0 +1,1 @@
+var did = false; for (var i = 0; i < 250; i++) { if (did) { break; } setTimeout(() => { if (typeof window['SbsProgramBase'] === 'object' && window['SbsProgramBase'] !== null) { window['SbsProgramBase'].prototype.getAd = null; did = true; }; }, 50 * i); }
