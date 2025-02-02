@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코드 도와줘</title>
+</head>
+
+<body>
+    <div
+        style="color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: Consolas, 'Courier New', monospace; font-size: 14.5px; line-height: 20px; white-space: pre;row-gap: 0px;">
+
+        <div><span style="color: #6a9955;">/*</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 기본 작동방식 설명:</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* fetch로 디시 로스티 미디어 마이너 갤러리에 있는 글들 중 m번부터 n번까지의 글들을 반복문 돌려 내용을
+                긁어온다.</span>
+        </div>
+        <div><span style="color: #6a9955;">&nbsp;* 너무 많은 페이지를 fetch하면 디시에선 자동적으로 몇십분동안 차단시키므로 이 코드에선 일단 m=38005,
+                n=38008-1
+                &amp;no=38005가 붙는것부터 38008까지 총 4개만 털 것이다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* fetch는 작동방식상 순서대로 전의 코드가 끝나면 다음줄이 작동되는게 아니라서, await을 쓸것이다. 당연히 내용물이
+                들어갈
+                함수도 async 함수가 될것이다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 반복문에서 저 i(변수명으로 다른 문자 써도 되지만 보통 이런 변수명은 i를 많이 쓰지 않나?)를 갖고 각 로미갤 게시물
+                주소를
+                따는 함수가 기본적으로 loopfunc이라는 함수고, 매개변수로 loopfuncparam이란걸 받아와서 이게 함수면 이걸 대신 사용한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 주소를 땄으면 이제 fetch로 내용을 긁어올것이다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 삭제된 게시물의 경우 정상적으로 페이지 내용이 안들어와서 오류가 일어나지만, 이걸 또 오류 발생을 막으려고
+                Promise.catch()나 try catch 등 별의 별 방법을 다 썼으나 내 실력의 한계로 별지랄을 해도 오류가 터져서 그냥 무시하고 지나가게 함. </span></div>
+
+        <div><span style="color: #6a9955;">&nbsp;* 쨌든 이렇게 턴 각 게시물 내용을 doingfuncparam 매개변수로 받은 함수를 쓰거나, 그 매개변수가 없거나 함수가
+                아닐시
+                정의된 doingfunc로 그냥 써서 원하는 형태로 변형하고, 처리한뒤, rtv라는 변수명의 배열에 집어넣고 반환한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 여기서 털고자 하는것은 털고자 한 로미갤 게시물에 나온 모든 암호화된 url들(암호화 풀어서)이다. 말하자면
+                복잡한데...</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 로스트 미디어 마이너 갤러리는 게시물 올릴때 발굴한 로스트 미디어를 올릴때 주소를 그대로 쓰면 봇이 지워버릴수 있으므로
+                규정상
+                반드시 url을 base64로 인코딩한뒤 올리게 되어있다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 그래서 atob을 쓴다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* doingfuncparam 매개변수로 받을, 내용물을 처리할 함수는(searchAll을 실제로 호출할때 콜백함수와 같이
+                매개변수로
+                주는 함수로 썼다.)</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 1. 콜백함수의 매개변수로 게시물 내용을 받는다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 2. 거기에서 write_div라는 클래스명의 요소(모든 디시갤에서 게시물 본 내용이 든 태그이다.)를 통째로 가져온다.
+            </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 처음엔 전 html 문서를 통째로 iframe 안에 욱여넣고
+                프레임.contentDocument.body.querySelector('.write_div)로 쓰려고 했지만(참고로 write_div라는 클래스명을 가진 태그는 디시 시스템상 하나밖에
+                없어서
+                querySelectorAll()[n] 이따위짓거리를 할 필요가 없다),</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 그렇게 하면 전 문서를 통째로 갖다쓰기 때문에 쓸데없는 다른것까지 로딩되어 엄청 느리고, 무겁게 된다.</span>
+        </div>
+
+        <div><span style="color: #6a9955;">&nbsp;* 그래서 정규표현식으로 div.write_div 부분의 html코드를 그대로 match시켜 가져오게 했다.</span>
+        </div>
+
+        <div><span style="color: #6a9955;">&nbsp;* 3. iframe을 하나 생성한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 4. srcdoc으로 html구조대로 문서를 넣고, 아까 구한 .write_div를 body 안에 넣는다.</span>
+        </div>
+
+        <div><span style="color: #6a9955;">&nbsp;* 5. 만든 iframe을 실제로 html 문서 안에 넣는다. 그리고 드디어 만들어진 게시물이 있는 태그를
+                querySelector로
+                구한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 5. 이건 해보니까 작동이 안돼서 srcdoc에 .write_div를 다시 넣은 뒤 querySelector로 다시
+                구한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 6. 이것도 작동이 안돼서 이제 어차피 html내용이 있으니까
+                프레임.contentDocument.body.innerHTML을
+                바꿔서 .write_div를 넣고, 다시 querySelector로 구한다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 7. 이제 얻은 .write_div 안에 있을 p태그를 전부 털어서 그들의 innerHTML을 공백문자단위로
+                분리한뒤(여기까지는
+                작동이 되었다), 각각 atob을 써서 base64로부터 변환한다. 이때 base64는 latin1 영역 안의 128 문자만 쓰므로 atob,btoa도 그 밖의 문자를 쓰면 오류가
+                난다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 따라서 해당 128가지 문자가 아닌 모든 문자를 제거하는 함수를 즉석에서 하나 만들어 쓴다.</span></div>
+
+        <div><span style="color: #6a9955;">&nbsp;* 8. 이걸로 base64 디코딩할수 있게 해놓으면, 이제 atob으로 전부 변환하고, 이 중 원래 정상적인 url
+                주소였던것은
+                디코딩되면서 다시 http,https로 시작하는것으로 바뀔테니 그러한것만 골라서(몇몇은 startsWith가 아닌 includes로 구분했는데, 이는 그냥 넘어가자.) 리턴할 배열에
+                넣는다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 9. 이걸 다시 최종적으로 searchAll이 배열에 집어넣고, 이걸 다시 최종적으로 모든것이 저장될 myurlarray
+                배열에
+                집어넣는다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* -해당 부분 작동 설명 끝-</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 이러면 배열이 들어간 배열이 들어간 배열...이 되므로 3차원배열일테니 flat을 써서 평탄화해준다.</span></div>
+
+        <div><span style="color: #6a9955;">&nbsp;* </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 디버깅하는 과정에서 보니 atob을 쓰기 위해 latin1에 속하지 않는 문자를 제거하는 함수 직전까지는 작동이 되는데 그
+                함수를
+                쓰니 처리할 문자열의 모든게 사라졌다.</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* 따라서 latin1의 128가지 문자가 아닌것을 제거할 함수에서 문제가 발생한듯하다.</span></div>
+
+        <div><span style="color: #6a9955;">*/</span></div>
+        <div><span style="color: #569cd6;">async</span> <span style="color: #569cd6;">function</span> falseFunc() {
+        </div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">return</span> <span style="color: #569cd6;">false</span>;</div>
+
+        <div>}</div>
+        <div><span style="color: #569cd6;">async</span> <span style="color: #569cd6;">function</span> fetchfunc(url,
+            opts) {
+        </div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">try</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> <span
+                style="color: #569cd6;">await</span> window.fetch(url, opts);</div>
+        <div>&nbsp; &nbsp; } <span style="color: #569cd6;">catch</span> (error) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">/* var rtv = await falseFunc();</span></div>
+
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; rtv.text=function(){</span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; return "";</span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; } */</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> <span
+                style="color: #569cd6;">await</span> window.fetch(<span style="color: #ce9178;">"/"</span>, opts);</div>
+
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #6a9955;">//return await window.fetch(url, opts).then((data) =&gt; {
+                return
+                data; }).catch((reason_of_err) =&gt; { if (reason_of_err) { return { text: function () {
+                console.log(reason_of_err); return ''; } };} });</span></div>
+        <div>}</div>
+        <div><span style="color: #6a9955;">/**</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@callback</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">mycbfunc</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{string}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">text</span></div>
+        <div><span style="color: #6a9955;">*/</span></div>
+        <div><span style="color: #6a9955;">/**</span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{string}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">urlparam</span><span style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{number}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">fromparam</span><span style="color: #6a9955;"> </span></div>
+
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{number}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">toparam</span><span style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{Function}</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">loopfuncparam</span><span
+                style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{mycbfunc}</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">doingfuncparam</span><span
+                style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp;* </span><span style="color: #569cd6;">@returns</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{Array}</span></div>
+        <div><span style="color: #6a9955;">&nbsp;*/</span></div>
+        <div><span style="color: #569cd6;">var</span> searchAll = <span style="color: #569cd6;">async</span> (urlparam,
+            fromparam, toparam, loopfuncparam, doingfuncparam) <span style="color: #569cd6;">=&gt;</span> {</div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> rtv = [];</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> url = <span style="color: #ce9178;">""</span>;</div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">if</span> (<span style="color: #569cd6;">typeof</span> urlparam
+            !==
+            <span style="color: #ce9178;">'string'</span> &amp;&amp; !(urlparam <span
+                style="color: #569cd6;">instanceof</span> String)) {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; url = <span style="color: #569cd6;">new</span> String(urlparam);</div>
+
+        <div>&nbsp; &nbsp; } <span style="color: #569cd6;">else</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; url = urlparam;</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> from = <span style="color: #b5cea8;">0</span>;</div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">if</span> (!isNaN(Number(fromparam))) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; from = Number(fromparam);</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> to = <span style="color: #b5cea8;">1000</span>;
+        </div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">if</span> (!isNaN(Number(toparam))) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; to = Number(toparam);</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #6a9955;">/**</span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp;* </span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{string}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">urltoreplace</span><span style="color: #6a9955;"> </span></div>
+
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp;* </span><span style="color: #569cd6;">@param</span><span
+                style="color: #6a9955;"> </span><span style="color: #6a9955;">{number}</span><span
+                style="color: #6a9955;">
+            </span><span style="color: #6a9955;">curridx</span><span style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp;* </span><span
+                style="color: #569cd6;">@returns</span><span style="color: #6a9955;"> </span><span
+                style="color: #6a9955;">{string}</span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp;*/</span></div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> loopfunc = (urltoreplace, curridx) <span
+                style="color: #569cd6;">=&gt;</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> rtv0 = <span
+                style="color: #ce9178;">""</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; rtv0 = <span style="color: #569cd6;">typeof</span> urltoreplace === <span
+                style="color: #ce9178;">'string'</span> ? urltoreplace : <span style="color: #569cd6;">new</span>
+            String(urltoreplace);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (isNaN(Number(curridx))) {</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> <span
+                style="color: #569cd6;">false</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (<span
+                style="color: #569cd6;">typeof</span> curridx !== <span style="color: #ce9178;">'number'</span>) {</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; curridx = Number(curridx);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">//dcinside</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; rtv0 += rtv0.includes(<span style="color: #ce9178;">"?"</span>) ? <span
+                style="color: #ce9178;">`&amp;no=</span><span style="color: #569cd6;">${</span>curridx<span
+                style="color: #569cd6;">}</span><span style="color: #ce9178;">&amp;page=1`</span> : <span
+                style="color: #ce9178;">`?no=</span><span style="color: #569cd6;">${</span>curridx<span
+                style="color: #569cd6;">}</span><span style="color: #ce9178;">&amp;page=1`</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> rtv0;</div>
+        <div>&nbsp; &nbsp; };</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">if</span> (<span style="color: #569cd6;">typeof</span>
+            loopfuncparam === <span style="color: #ce9178;">'function'</span>) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; loopfunc = loopfuncparam;</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> doingfunc = (textparam) <span
+                style="color: #569cd6;">=&gt;</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> textparam;</div>
+        <div>&nbsp; &nbsp; };</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">if</span> (<span style="color: #569cd6;">typeof</span>
+            doingfuncparam === <span style="color: #ce9178;">'function'</span>) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; doingfunc = doingfuncparam;</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">for</span> (<span style="color: #569cd6;">var</span> i = from;
+            i
+            &lt; to; i++) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> valtopush_pr = <span
+                style="color: #569cd6;">await</span> window.fetch(loopfunc(url, i), { mode: <span
+                style="color: #ce9178;">'no-cors'</span>, method: <span style="color: #ce9178;">'get'</span> });</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> valtopush = <span
+                style="color: #569cd6;">await</span> valtopush_pr.text();</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">await</span> (<span
+                style="color: #569cd6;">async</span> () <span style="color: #569cd6;">=&gt;</span> {
+            rtv.push(doingfunc(valtopush)); })();</div>
+        <div>&nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">await</span> (<span style="color: #569cd6;">async</span> ()
+            <span style="color: #569cd6;">=&gt;</span> { console.log(<span style="color: #ce9178;">'end'</span>) })();
+        </div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">return</span> rtv;</div>
+        <div>}</div>
+        <div><span style="color: #569cd6;">var</span> myurlarray = [];</div>
+        <div>(<span style="color: #569cd6;">async</span> () <span style="color: #569cd6;">=&gt;</span> {</div>
+
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">var</span> myarr = <span style="color: #569cd6;">await</span>
+            searchAll(<span style="color: #ce9178;">"/mgallery/board/view/?id=lostmedia"</span>, <span
+                style="color: #b5cea8;">38005</span>, <span style="color: #b5cea8;">38009</span>, (urltoreplace,
+            curridx)
+            <span style="color: #569cd6;">=&gt;</span> {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> rtv0 = <span
+                style="color: #ce9178;">""</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; rtv0 = <span style="color: #569cd6;">typeof</span> urltoreplace === <span
+                style="color: #ce9178;">'string'</span> ? urltoreplace : <span style="color: #569cd6;">new</span>
+            String(urltoreplace);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (isNaN(Number(curridx))) {</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> <span
+                style="color: #569cd6;">false</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (<span
+                style="color: #569cd6;">typeof</span> curridx !== <span style="color: #ce9178;">'number'</span>) {</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; curridx = Number(curridx);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">//dcinside</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; rtv0 += rtv0.includes(<span style="color: #ce9178;">"?"</span>) ? <span
+                style="color: #ce9178;">`&amp;no=</span><span style="color: #569cd6;">${</span>curridx<span
+                style="color: #569cd6;">}</span><span style="color: #ce9178;">&amp;page=1`</span> : <span
+                style="color: #ce9178;">`?no=</span><span style="color: #569cd6;">${</span>curridx<span
+                style="color: #569cd6;">}</span><span style="color: #ce9178;">&amp;page=1`</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> rtv0;</div>
+        <div>&nbsp; &nbsp; }, (textparam) <span style="color: #569cd6;">=&gt;</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> mynewframe =
+            document.createElement(<span style="color: #ce9178;">"iframe"</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> matches = textparam.replaceAll(<span
+                style="color: #d16969;">/\s</span>+<span style="color: #d16969;">/</span><span
+                style="color: #569cd6;">gmi</span>, <span style="color: #ce9178;">' '</span>).replaceAll(<span
+                style="color: #ce9178;">'\n'</span>, <span style="color: #ce9178;">''</span>).replaceAll(<span
+                style="color: #ce9178;">'\r'</span>, <span style="color: #ce9178;">''</span>).replaceAll(<span
+                style="color: #ce9178;">'\x3C'</span>, <span style="color: #ce9178;">'&lt;'</span>).match(<span
+                style="color: #d16969;">/&lt;div class="write_div"(.</span>*?<span
+                style="color: #d16969;">)&gt;(.</span>*?<span style="color: #d16969;">)&lt;\/div&gt;/</span><span
+                style="color: #569cd6;">mi</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #6a9955;">//matches!==null?console.log(matches[0]):{};</span>
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; mynewframe.srcdoc = <span style="color: #ce9178;">`&lt;!DOCTYPE
+                html&gt;&lt;html
+                lang="en"&gt;&lt;head&gt;&lt;meta
+                charset="UTF-8"&gt;&lt;title&gt;Document&lt;/title&gt;&lt;/head&gt;&lt;body&gt;</span><span
+                style="color: #569cd6;">${</span>matches !== <span style="color: #569cd6;">null</span> ? <span
+                style="color: #569cd6;">new</span> String(matches[<span style="color: #b5cea8;">0</span>]) : <span
+                style="color: #ce9178;">''</span><span style="color: #569cd6;">}</span><span
+                style="color: #ce9178;">&lt;/body&gt;&lt;/html&gt;`</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> myframe =
+            document.body.appendChild(mynewframe);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> write_div =
+            myframe.contentDocument.body.querySelector(<span style="color: #ce9178;">'.write_div'</span>);</div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (write_div === <span
+                style="color: #569cd6;">null</span>) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; myframe.srcdoc = <span style="color: #ce9178;">`&lt;!DOCTYPE
+                html&gt;&lt;html lang="en"&gt;&lt;head&gt;&lt;meta
+                charset="UTF-8"&gt;&lt;title&gt;Document&lt;/title&gt;&lt;/head&gt;&lt;body&gt;</span><span
+                style="color: #569cd6;">${</span>matches !== <span style="color: #569cd6;">null</span> ? <span
+                style="color: #569cd6;">new</span> String(matches[<span style="color: #b5cea8;">0</span>]) : <span
+                style="color: #ce9178;">''</span><span style="color: #569cd6;">}</span><span
+                style="color: #ce9178;">&lt;/body&gt;&lt;/html&gt;`</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; write_div = myframe.contentDocument.body.querySelector(<span
+                style="color: #ce9178;">'.write_div'</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span> (write_div === <span
+                style="color: #569cd6;">null</span>) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; myframe.contentDocument.body.innerHTML = matches !== <span
+                style="color: #569cd6;">null</span> ? <span style="color: #569cd6;">new</span> String(matches[<span
+                style="color: #b5cea8;">0</span>]) : <span style="color: #ce9178;">''</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; write_div = myframe.contentDocument.body.querySelector(<span
+                style="color: #ce9178;">'.write_div'</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #6a9955;">//console.log(myframe.contentDocument.body.innerHTML);</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> paragraphs =
+            write_div?.querySelectorAll(<span style="color: #ce9178;">'p'</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> rtarr = [];</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; paragraphs?.forEach((el, idx, par) <span style="color: #569cd6;">=&gt;</span> {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; el.innerText.split(<span style="color: #ce9178;">'
+                '</span>).forEach((val0, idx0, arr0) <span style="color: #569cd6;">=&gt;</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #6a9955;">//console.log(atobval0);</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">/**</span></div>
+
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;* </span></div>
+
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;* </span><span
+                style="color: #569cd6;">@param</span><span style="color: #6a9955;"> </span><span
+                style="color: #6a9955;">{string}</span><span style="color: #6a9955;"> </span><span
+                style="color: #6a9955;">str</span><span style="color: #6a9955;"> </span></div>
+        <div><span style="color: #6a9955;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;*/</span></div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">function</span>
+            latin1(str) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">//이 함수는
+                latin1 영역 밖의 문자는 싸그리 없애버린다. 그런데 딱 여기부터 작동이 안돼...</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #569cd6;">var</span>
+            rtv = <span style="color: #ce9178;">''</span>;</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #569cd6;">for</span>
+            (<span style="color: #569cd6;">var</span> i = <span style="color: #b5cea8;">0</span>; i &lt; str.length;
+            i++) {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #569cd6;">if</span> (str.charCodeAt(i) &gt;= <span style="color: #b5cea8;">0x80</span>
+            &amp;&amp; str.charCodeAt(i) &lt;= <span style="color: #b5cea8;">0xff</span>) {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rtv +=
+            str[i];</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; } <span
+                style="color: #569cd6;">else</span> {</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rtv +=
+            <span style="color: #ce9178;">''</span>;
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">//latin1함수를 굳이 쓴 이유는
+                atob,btoa 함수가 latin1영역 안의 문자만 처리할수 있기 때문이다. base64인코딩이 원래 그러니까.</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">var</span> atobval0 =
+            atob(latin1(val0));</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #6a9955;">//atob는 base64를
+                디코딩하는,
+                기본적으로 Window.atob로 깔려있는 내장함수이다.</span></div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span
+                style="color: #6a9955;">//console.log(val0.split('').map((val1, idx1, arr1) =&gt; { if
+                (val1.charCodeAt(0)
+                &gt; 0x00ff || val1.charCodeAt(0) &lt; 0x0080) { return ''; }; return val1; }).join(''));</span></div>
+
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; console.log(latin1(val0));</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">if</span>
+            ((atobval0.includes(<span style="color: #ce9178;">"https://"</span>) || atobval0.includes(<span
+                style="color: #ce9178;">"http://"</span>) || atobval0.startsWith(<span
+                style="color: #ce9178;">"www."</span>) || atobval0.startsWith(<span style="color: #ce9178;">"//"</span>)
+            ||
+            atobval0.startsWith(<span style="color: #ce9178;">"/"</span>) || atobval0.startsWith(<span
+                style="color: #ce9178;">"./"</span>) || atobval0.startsWith(<span
+                style="color: #ce9178;">"../"</span>))) {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; rtarr.push(atobval0);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; }</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; });</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; });</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; myframe.remove();</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; <span style="color: #569cd6;">return</span> rtarr;</div>
+        <div>&nbsp; &nbsp; });</div>
+        <div>&nbsp; &nbsp; <span style="color: #569cd6;">await</span> (<span style="color: #569cd6;">async</span> ()
+            <span style="color: #569cd6;">=&gt;</span> {
+        </div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; myurlarray.push(myarr);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; myurlarray = myurlarray.flat(<span style="color: #b5cea8;">3</span>);</div>
+        <div>&nbsp; &nbsp; &nbsp; &nbsp; console.log(myurlarray);</div>
+        <div>&nbsp; &nbsp; })();</div>
+        <div>})();</div>
+    </div>
+</body>
+
+</html>
