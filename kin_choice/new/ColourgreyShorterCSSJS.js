@@ -1,14 +1,17 @@
 (function (gTh, CGRshorter) { "object" == typeof exports && "undefined" != typeof module ? module.exports = CGRshorter() : "function" == typeof define && define.amd ? define(CGRshorter) : (gTh = "undefined" != typeof globalThis ? globalThis : gTh || self).ColourgreyShorterJS = CGRshorter() })(this, function () {
     function returnAllInOneArr(arr) {
+        /*
+         * Use Array.prototype.flat instead of it.
+        */
         var rtv = [];
         for (var i = 0; i < arr.length; i++) {
-            if (arr[i].length > 0 && Array.isArray(arr[i])) {
+            if (arr[i].length > 0 && (arr[i] instanceof Array)) {
                 var aderr = returnAllInOneArr(arr[i]);
                 for (var ijk = 0; ijk < aderr.length; ijk++) {
                     rtv[rtv.length] = aderr[ijk];
                 };
             } else {
-                if (!Array.isArray(arr[i])) {
+                if (!(arr[i] instanceof Array)) {
                     rtv[rtv.length] = arr[i];
                 }
 
@@ -53,7 +56,7 @@
         }
     };
     function checkArr(param0) {
-        if (Array.isArray(param0)) {
+        if (param0 instanceof Array) {
             return true;
         } else {
             return false;
@@ -114,6 +117,224 @@
     function checkStringandifItisnotanEmptyStr(param0) {
         return (checkString(param0) && param0 != '');
     };
+    function checkStr(param0) {
+        return checkString(param0);
+    };
+
+    var customAnimations = [];
+    function getCustomAnimation(idx) {
+        return customAnimations[idx] ? customAnimations[idx] : null;
+    };
+    function getCustomAnimationIdx(id) {
+        return customAnimations.indexOf(customAnimations.find(val => val.id === id));
+    };
+    function getCustomAnimationById(id) {
+        return getCustomAnimation(getCustomAnimationIdx(id));
+    };
+    var animateCustom = (tparam, cbfunc) => {
+        if (checkFunc(cbfunc)) {
+            cbfunc(tparam);
+        }
+    };
+    var requestCustomAnimationFrame = (cbfunc, timeout) => {
+        var timestamp = 0;
+        var animationId = checkNumber(customAnimations[customAnimations.length - 1]?.id) ? customAnimations[customAnimations.length - 1]?.id + 1 : 0;
+        customAnimations.push({ id: animationId, timestamp: timestamp, timeout: timeout, animation: cbfunc, });
+        if (checkFunc(cbfunc)) {
+            window.setTimeout(() => { customAnimations[getCustomAnimationIdx(animationId)].timestamp++; animateCustom(getCustomAnimationById(animationId).timestamp, cbfunc); }, timeout);
+        }
+        return animationId;
+    };
+    function customAnimationClass() {
+        this.customAnimations = [];
+    }
+    customAnimationClass.prototype = {
+        getCustomAnimation: function (idx) {
+            return this.customAnimations[idx] ? this.customAnimations[idx] : null;
+        },
+        getCustomAnimationIdx: function (id) {
+            return this.customAnimations.indexOf(this.customAnimations.find(val => val.id === id));
+        },
+        getCustomAnimationById: function (id) {
+            return this.getCustomAnimation(this.getCustomAnimationIdx(id));
+        },
+        animateCustom: function (tparam, cbfunc) {
+            if (checkFunc(cbfunc)) {
+                cbfunc(tparam);
+            }
+        },
+        requestCustomAnimationFrame: function (cbfunc, timeout) {
+            var timestamp = 0;
+            var animationId = checkNumber(this.customAnimations[this.customAnimations.length - 1]?.id) ? this.customAnimations[this.customAnimations.length - 1]?.id + 1 : 0;
+            this.customAnimations.push({ id: animationId, timestamp: timestamp, timeout: timeout, animation: cbfunc, });
+            if (checkFunc(cbfunc)) {
+                window.setTimeout(() => { this.customAnimations[this.getCustomAnimationIdx(animationId)].timestamp++; this.animateCustom(this.getCustomAnimationById(animationId).timestamp, cbfunc); }, timeout);
+            }
+            return animationId;
+        },
+    };
+    Document.prototype.animation = new customAnimationClass();
+    function animateHTMLElement(el, animation, options = { 'duration': 1000, 'repeat-count': 1, 'points': [0, 1], 'method': false, 'delay': 0, 'easing': false, 'fill': false, 'iteration-start': 0.0, 'composite': false, 'timeline': false, 'direction': 'normal', 'id': false, 'timeout': 33.333333, 'setHTMLAttr': false, }) {
+        if (!(el instanceof HTMLElement)) {
+            return el || false;
+        }
+        if (!(animation instanceof Array) || Object.keys(animation).filter(val => !isNaN(Number(val))).length <= 0) {
+            return el || false;
+        }
+        if (!checkObj(options)) {
+            return el || false;
+        }
+        var ifAnimationIsArray = false;
+        if (checkArr(animation)) {
+            ifAnimationIsArray = true;
+        }
+        var HTMLElAnimateOpts = { duration: options.duration, iterations: options['repeat-count'], direction: options.direction, iterationStart: options['iteration-start'], delay: options.delay, };
+        if (options.easing) {
+            HTMLElAnimateOpts['easing'] = options.easing;
+        }
+        if (options.fill) {
+            HTMLElAnimateOpts['fill'] = options.fill;
+        }
+        if (options.composite) {
+            HTMLElAnimateOpts['composite'] = options.composite;
+        }
+        if (options.timeline) {
+            HTMLElAnimateOpts['timeline'] = options.timeline;
+        }
+        if (options.id) {
+            HTMLElAnimateOpts['id'] = options.id;
+        }
+        if (ifAnimationIsArray) {
+            if (options.method === 'HTMLElement.animate') {
+                el.animate(animation, HTMLElAnimateOpts);
+            } else {
+                if (options.method === 'requestAnimationFrame') {
+                    var animationStyleFunc = (currinc, max) => {
+                        if (typeof animation[Math.round(currinc / max) * animation.length - 1] === 'function') {
+                            animation[Math.round(currinc / max) * animation.length - 1](el);
+                        } else if (checkObj(animation[Math.round(currinc / max) * animation.length - 1])) {
+                            for (var cssprop in animation[Math.round(currinc / max) * animation.length - 1]) {
+                                el.style.setProperty(cssprop, animation[Math.round(currinc / max) * animation.length - 1][cssprop]);
+                            }
+                        }
+                    }
+                    var animateFunc = (inc, max) => {
+                        var aid = null;
+                        if (inc < max) {
+                            aid = requestAnimationFrame((timestamp) => {
+                                animationStyleFunc(inc, max);
+                                animateFunc(inc + 1, max);
+                            });
+                        }
+                        return aid;
+                    }
+                    var animationId = animateFunc(0, options['repeat-count']);
+                    el.animationNow = animationId;
+                    if (options.setHTMLAttr) {
+                        el.setProperty('animation-now', animationId);
+                    }
+                } else if (options.method === 'window.setTimeout') {
+                    if (!checkNumber(options.timeout)) {
+                        return el || false;
+                    }
+                    var animationStyleFunc = (currinc, max) => {
+                        if (typeof animation[Math.round(currinc / max) * animation.length - 1] === 'function') {
+                            animation[Math.round(currinc / max) * animation.length - 1](el);
+                        } else if (checkObj(animation[Math.round(currinc / max) * animation.length - 1])) {
+                            for (var cssprop in animation[Math.round(currinc / max) * animation.length - 1]) {
+                                el.style.setProperty(cssprop, animation[Math.round(currinc / max) * animation.length - 1][cssprop]);
+                            }
+                        }
+                    }
+                    var animateFunc = (inc, max) => {
+                        var aid = null;
+                        if (inc < max) {
+                            aid = document.animation.requestCustomAnimationFrame((timestamp) => {
+                                animationStyleFunc(inc, max);
+                                animateFunc(inc + 1, max);
+                            }, options.timeout);
+                        }
+                        return aid;
+                    }
+                    var animationId2 = animateFunc(0, options['repeat-count']);
+                    el.customAnimationNow = animationId2;
+                    if (options.setHTMLAttr) {
+                        el.setAttribute('custom-animation-now', animationId2);
+                    }
+                }
+            }
+        } else {
+            if (options.method === 'HTMLElement.animate') {
+                el.animate(animation, HTMLElAnimateOpts);
+            } else {
+                animation.length = Object.keys(animation).filter(val => !isNaN(Number(val))).length;
+                var newanimation = new Array(animation.length);
+                for (var key in animation) {
+                    if (!isNaN(Number(key))) {
+                        newanimation[Number(key)] = animation[key];
+                    }
+                }
+                if (options.method === 'requestAnimationFrame') {
+                    var animationStyleFunc = (currinc, max) => {
+                        if (typeof newanimation[Math.round(currinc / max) * newanimation.length - 1] === 'function') {
+                            newanimation[Math.round(currinc / max) * newanimation.length - 1](el);
+                        } else if (checkObj(newanimation[Math.round(currinc / max) * newanimation.length - 1])) {
+                            for (var cssprop in newanimation[Math.round(currinc / max) * newanimation.length - 1]) {
+                                el.style.setProperty(cssprop, newanimation[Math.round(currinc / max) * newanimation.length - 1][cssprop]);
+                            }
+                        }
+                    }
+                    var animateFunc = (inc, max) => {
+                        var aid = null;
+                        if (inc < max) {
+                            aid = requestAnimationFrame((timestamp) => {
+                                animationStyleFunc(inc, max);
+                                animateFunc(inc + 1, max);
+                            });
+                        }
+                        return aid;
+                    }
+                    var animationId = animateFunc(0, options['repeat-count']);
+                    el.animationNow = animationId;
+                    if (options.setHTMLAttr) {
+                        el.setProperty('animation-now', animationId);
+                    }
+                } else if (options.method === 'window.setTimeout') {
+                    if (!checkNumber(options.timeout)) {
+                        return el || false;
+                    }
+                    var animationStyleFunc = (currinc, max) => {
+                        if (typeof newanimation[Math.round(currinc / max) * newanimation.length - 1] === 'function') {
+                            newanimation[Math.round(currinc / max) * newanimation.length - 1](el);
+                        } else if (checkObj(newanimation[Math.round(currinc / max) * newanimation.length - 1])) {
+                            for (var cssprop in newanimation[Math.round(currinc / max) * newanimation.length - 1]) {
+                                el.style.setProperty(cssprop, newanimation[Math.round(currinc / max) * newanimation.length - 1][cssprop]);
+                            }
+                        }
+                    }
+                    var animateFunc = (inc, max) => {
+                        var aid = null;
+                        if (inc < max) {
+                            aid = document.animation.requestCustomAnimationFrame((timestamp) => {
+                                animationStyleFunc(inc, max);
+                                animateFunc(inc + 1, max);
+                            }, options.timeout);
+                        }
+                        return aid;
+                    }
+                    var animationId2 = animateFunc(0, options['repeat-count']);
+                    el.customAnimationNow = animationId2;
+                    if (options.setHTMLAttr) {
+                        el.setAttribute('custom-animation-now', animationId2);
+                    }
+                }
+            }
+        }
+        return el || true;
+    }
+    HTMLElement.prototype.newAnimate = function (animation, options) {
+        return animateHTMLElement.apply(null, this, animation, options);
+    }
     Math.custom_round_dec = function (param0, significant) {
         if (checkNumber(param0) && typeof significant === 'undefined') {
             return Math.round(param0);
@@ -171,7 +392,7 @@
                     rtv[rtv.length] = aderr[ijk];
                 };
             } else {
-                if (!Array.isArray(this[i])) {
+                if (!checkArr(this[i])) {
                     rtv[rtv.length] = this[i];
                 }
 
@@ -601,7 +822,7 @@
                             if (this.tabs_group instanceof HTMLElement && this.tab_select_group instanceof HTMLElement) {
                                 this.tabs = this.tabs_group.getEl_Class("tab").toArray();
                                 this.tabselects = this.tab_select_group.getEl_Class("select").toArray();
-                                if (Array.isArray(this.tabs) && Array.isArray(this.tabselects)) {
+                                if (checkArr(this.tabs) && checkArr(this.tabselects)) {
                                     if (this.tabs.length > 0 && this.tabselects.length > 0) {
                                         var thisobj = this;
                                         var shorterarr = (this.tabs.length > this.tabselects.length) ? this.tabselects : (this.tabs.length < this.tabselects.length) ? this.tabs : this.tabs;
@@ -637,7 +858,7 @@
                         console.log("show");
                         var thisobj = this;
                         if (this.tabs_and_tabselects) {
-                            if (Array.isArray(this.tabs_and_tabselects)) {
+                            if (checkArr(this.tabs_and_tabselects)) {
                                 this.tabs_and_tabselects.forEach(function (val, idx, arr) {
                                     if (checkObj(val)) {
 
@@ -832,7 +1053,7 @@
                 folding_paragraph = class {
                     constructor(elarg, options) {
                         this.el = (typeof elarg == 'string') ? document.getElementById(elarg) : (elarg instanceof HTMLElement) ? elarg : document.getElementById(elarg);
-                        this.options = (checkObj(options) && !Array.isArray(options)) ? options : {};
+                        this.options = (checkObj(options) && !checkArr(options)) ? options : {};
                         var thisobj = this;
                         if (this.el != null) {
 
@@ -1024,6 +1245,9 @@
             checkUndefined: checkUndefined,
             checkNumberNotNaNandNaN: checkNumberNotNaNandNaN,
             setCookie: setCookie,
+            checkStr: checkStr,
+            animateHTMLElement: animateHTMLElement,
+            customAnimationClass: customAnimationClass,
         };
         return ColourgreyShorterJS;
     })();
