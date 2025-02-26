@@ -687,6 +687,9 @@
     function setConfig(cparam) {
       config = cparam;
     }
+    function getConfig() {
+      return config;
+    }
     function error(code, msg, obj) {
       // do nothing if showErrors is not set
       if (
@@ -1487,6 +1490,9 @@
     }
     widget.setConfig = function (cp) {
       setConfig(cp);
+    }
+    widget.getConfig = function () {
+      return getConfig();
     }
     widget.orientation = function (arg) {
       // no arguments, return the current orientation
