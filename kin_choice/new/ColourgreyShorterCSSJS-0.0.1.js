@@ -453,7 +453,7 @@
                 rtv[rtv.length] = getElementsByAttrValue(thisobj.children.item(i), attr, value);
             };
         };
-        var rtv2 = returnAllInOneArr(rtv);
+        var rtv2 = returnAllInOneArr(rtv).filter(val=>val!==null);
         return rtv2;
     }
     HTMLElement.prototype.getElementsByAttrValue = function (attr, value) {
@@ -470,7 +470,7 @@
                 }
             };
         };
-        var rtv2 = returnAllInOneArr(rtv);
+        var rtv2 = returnAllInOneArr(rtv).filter(val=>val!==null);
         return rtv2;
     };
     Document.prototype.getElementsByAttrValue = function (attr, value) {
@@ -484,7 +484,7 @@
                 rtv[rtv.length] = this.children.item(i).getElementsByAttrValue(attr, value);
             };
         };
-        var rtv2 = returnAllInOneArr(rtv);
+        var rtv2 = returnAllInOneArr(rtv).filter(val=>val!==null);
         return rtv2;
     };
     HTMLElement.prototype.getElementById = function (IdParam) {
