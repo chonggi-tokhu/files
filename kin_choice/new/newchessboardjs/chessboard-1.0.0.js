@@ -816,13 +816,13 @@
         row = 1
       }
 
-      var squareColor = 'white'
+      var squarecolour = 'white'
       for (var i = 0; i < 8; i++) {
         html += '<div class="{row}">'
         for (var j = 0; j < 8; j++) {
           var square = alpha[j] + row
 
-          html += '<div class="{square} ' + CSS[squareColor] + ' ' +
+          html += '<div class="{square} ' + CSS[squarecolour] + ' ' +
             'square-' + square + '" ' +
             'style="width:' + squareSize + 'px;height:' + squareSize + 'px;" ' +
             'id="' + squareElsIds[square] + '" ' +
@@ -843,11 +843,11 @@
 
           html += '</div>' // end .square
 
-          squareColor = (squareColor === 'white') ? 'black' : 'white'
+          squarecolour = (squarecolour === 'white') ? 'black' : 'white'
         }
         html += '<div class="{clearfix}"></div></div>'
 
-        squareColor = (squareColor === 'white') ? 'black' : 'white'
+        squarecolour = (squarecolour === 'white') ? 'black' : 'white'
 
         if (orientation === 'white') {
           row = row - 1
@@ -892,9 +892,9 @@
       return interpolateTemplate(html, CSS)
     }
 
-    function buildSparePiecesHTML(color) {
+    function buildSparePiecesHTML(colour) {
       var pieces = ['wK', 'wQ', 'wR', 'wB', 'wN', 'wP', 'wA', 'wH', 'wE', 'wM']
-      if (color === 'black') {
+      if (colour === 'black') {
         pieces = ['bK', 'bQ', 'bR', 'bB', 'bN', 'bP', 'bA', 'bH', 'bE', 'bM']
       }
 
