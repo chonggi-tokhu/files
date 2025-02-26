@@ -684,7 +684,9 @@
     // -------------------------------------------------------------------------
     // Validation / Errors
     // -------------------------------------------------------------------------
-
+    function setConfig(cparam) {
+      config = cparam;
+    }
     function error(code, msg, obj) {
       // do nothing if showErrors is not set
       if (
@@ -1483,7 +1485,9 @@
       // return the new position object
       return newPos
     }
-
+    widget.setConfig = function (cp) {
+      setConfig(cp);
+    }
     widget.orientation = function (arg) {
       // no arguments, return the current orientation
       if (arguments.length === 0) {
