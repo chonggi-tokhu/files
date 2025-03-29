@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제2차 체스대전</title>
+    <script src="https://code.jquery.com/jquery-3.6.3.js"></script>
+    <link rel="stylesheet" href="https://chonggi-tokhu.github.io/files/kin_choice/new/chessboard-1.0.0.min.css">
+</head>
+
+<body>
+    <script src="https://chonggi-tokhu.github.io/files/kin_choice/new/newchessboardjs/chessboard-1.0.0.min.js"></script>
+    <script src="https://chonggi-tokhu.github.io/files/kin_choice/new/chess2.js"></script>
+    <div style="position: fixed;width: 100vw;">
+        <div id="board" style="width: 80vmin;"></div>
+        <div style="display: flex;">
+            <button onclick="theme.piece='wikipedia';board.position(game.fen());">기본 기물테마</button>
+            <button onclick="theme.piece='british-german';board.position(game.fen());">제2차 체스 대전 기물테마</button>
+        </div>
+        <div>
+            <div id="pgn"></div>
+            <div id="fen"></div>
+        </div>
+    </div>
+    <script>
+        var theme = {
+            piece: 'wikipedia',
+        }
+        function pieceTheme(piece) {
+            if (theme.piece === 'british-german') {
+                return 'https://chonggi-tokhu.github.io/files/warchess/britain_vs_germany/' + piece + '.png';
+            }
+            return 'https://chonggi-tokhu.github.io/files/kin_choice/new/fairychess/chess/files/img/chesspieces/wikipedia/' + piece + '.png';
+        }
+        var board = Chessboard("board");
+        var boardconfig = board.getConfig();
+        var game = new Chess();
+        boardconfig['pieceTheme'] = pieceTheme;
+        function updateStatus() {
+            document.getElementById("pgn").innerText = game.pgn();
+            document.getElementById("fen").innerText = game.fen();
+        }
+        function onDragStart(source, piece, position, orientation) {
+            // do not pick up pieces if the game is over
+            if (game.game_over()) return false
+
+            // only pick up pieces for the side to move
+            if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+                (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+                return false
+            }
+        }
+
+        function onDrop(source, target) {
+            // see if the move is legal
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // NOTE: always promote to a queen for example simplicity
+            })
+
+            // illegal move
+            if (move === null) return 'snapback'
+            updateStatus();
+        }
+
+        // update the board position after the piece snap
+        // for castling, en passant, pawn promotion
+        function onSnapEnd() {
+            board.position(game.fen())
+        }
+        boardconfig.onSnapEnd = onSnapEnd;
+        boardconfig.onDrop = onDrop;
+        boardconfig.onDragStart = onDragStart;
+        boardconfig.draggable = true;
+        board.setConfig(boardconfig);
+        updateStatus();
+    </script>
+</body>
+
+</html>
