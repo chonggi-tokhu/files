@@ -1719,6 +1719,7 @@ var Chess = function (fen) {
             /* trim and get array of moves */
             var moves = trim(ms).split(new RegExp(/\s+(|[^\{\}])/)).map(val=>val.replaceAll('__',' '));
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
+            console.log(moves);
             comments = moves.map(val => {
                 return val.includes('{') && val.includes('}') ? val.replace(/\{(.*)\}/gmi, '$1') : '';
             });
@@ -1726,7 +1727,6 @@ var Chess = function (fen) {
                 return val.replaceAll(/[^\?\!]/gmi, '');
             });
             moves = moves.map(val => val.replace(/\{(.*)\}/gmi, ''));
-            console.log(moves);
             /* delete empty entries */
             var move = '';
 
