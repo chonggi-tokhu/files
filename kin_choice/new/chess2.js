@@ -1700,6 +1700,7 @@ var Chess = function (fen) {
             console.log(ms);
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
+            ms = ms.replaceAll(' {','{');
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
