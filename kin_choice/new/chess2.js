@@ -1723,6 +1723,7 @@ var Chess = function (fen) {
             moves = moves.map(val => val.replace(/\{(.*)\}/gmi, ''));
             /* delete empty entries */
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
+            console.log(moves);
             var move = '';
 
             for (var half_move = 0; half_move < moves.length - 1; half_move++) {
