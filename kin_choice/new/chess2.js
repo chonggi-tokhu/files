@@ -1692,9 +1692,8 @@ var Chess = function (fen) {
 
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
-
             /* delete comments */
-            ms = ms.replace(/(\{[^}]+\})+?/g, '');
+            //ms = ms.replace(/(\{[^}]+\})+?/g, '');
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
@@ -1709,10 +1708,10 @@ var Chess = function (fen) {
             ms = ms.replace(/\.\.\./g, '');
 
             /* delete numeric annotation glyphs */
-            ms = ms.replace(/\$\d+/g, '');
+            //ms = ms.replace(/\$\d+/g, '');
 
             /* trim and get array of moves */
-            var moves = trim(ms).split(new RegExp(/\s+/));
+            var moves = trim(ms).replaceAll(/\s+\{/gmi,'{').split(new RegExp(/\s+/));
 
             /* delete empty entries */
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
