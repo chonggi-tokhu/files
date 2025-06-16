@@ -1722,7 +1722,7 @@ var Chess = function (fen) {
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
             console.log(moves);
             comments = moves.map(val => {
-                return val.includes('{') && val.includes('}') ? val.replace(/\{(.*)\}/gmi, '$1') : '';
+                return val.includes('{') && val.includes('}') ? val.replace(/((?:.*?)|)\{(.*)\}/gmi, '$2') : '';
             });
             annotations = moves.map(val => {
                 return val.replaceAll(/[^\?\!]/gmi, '');
