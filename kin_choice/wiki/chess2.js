@@ -1695,7 +1695,7 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            ms = ms.replace(/(\{[^}]+\})+?/g, '$1'.replaceAll(/\s/gmi,'__'));
+            ms = ms.replaceAll(/(\{[^}]+\})+?/g, '$1'.replaceAll(/\s/gmi,'__'));
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
@@ -1713,7 +1713,7 @@ var Chess = function (fen) {
             //ms = ms.replace(/\$\d+/g, '');
 
             /* trim and get array of moves */
-            var moves = trim(ms).split(new RegExp(/[^\{]\s+[^\{\}]/)).map(val=>val.replaceAll('__',' '));
+            var moves = trim(ms).split(new RegExp(/\s+[^\{\}]/)).map(val=>val.replaceAll('__',' '));
             comments = moves.map(val => {
                 return val.includes('{') && val.includes('}') ? val.replace(/\{(.*)\}/gmi, '$1') : '';
             });
@@ -1723,6 +1723,7 @@ var Chess = function (fen) {
             moves = moves.map(val => val.replace(/\{(.*)\}/gmi, ''));
             /* delete empty entries */
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
+            console.log(moves);
             var move = '';
 
             for (var half_move = 0; half_move < moves.length - 1; half_move++) {

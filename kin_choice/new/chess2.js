@@ -1695,7 +1695,7 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            ms = ms.replace(/(\{[^}]+\})+?/g, '$1'.replaceAll(/\s/gmi,'__'));
+            ms = ms.replaceAll(/(\{[^}]+\})+?/g, '$1'.replaceAll(/\s/gmi,'__'));
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
