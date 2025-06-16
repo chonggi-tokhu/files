@@ -169,6 +169,8 @@ var Chess = function (fen) {
     var half_moves = 0;
     var move_number = 1;
     var history = [];
+    var comments = [];
+    var annotations = [];
     var header = {};
 
     /* if the user passes in a fen string, load it, else default to
@@ -1040,10 +1042,10 @@ var Chess = function (fen) {
         });
     }
 
-    function make_move(move) {
+    function make_move(move,pushtohistory=true) {
         var us = turn;
         var them = swap_colour(us);
-        push(move);
+        pushtohistory ? push(move):{};
 
         board[move.to] = board[move.from];
         board[move.from] = null;
@@ -1693,7 +1695,7 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            //ms = ms.replace(/(\{[^}]+\})+?/g, '');
+            ms = ms.replace(/(\{[^}]+\})+?/g, '$1'.replaceAll(/\s/gmi,'__'));
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
@@ -1711,8 +1713,14 @@ var Chess = function (fen) {
             //ms = ms.replace(/\$\d+/g, '');
 
             /* trim and get array of moves */
-            var moves = trim(ms).replaceAll(/\s+\{/gmi,'{').split(new RegExp(/\s+/));
-
+            var moves = trim(ms).split(new RegExp(/[^\{]\s+[^\{\}]/)).map(val=>val.replaceAll('__',' '));
+            comments = moves.map(val => {
+                return val.includes('{') && val.includes('}') ? val.replace(/\{(.*)\}/gmi, '$1') : '';
+            });
+            annotations = moves.map(val => {
+                return val.replaceAll(/[^\?\!]/gmi, '');
+            });
+            moves = moves.map(val => val.replace(/\{(.*)\}/gmi, ''));
             /* delete empty entries */
             moves = moves.join(',').replace(/,,+/g, ',').split(',');
             var move = '';
@@ -1872,6 +1880,12 @@ var Chess = function (fen) {
             }
 
             return move_history;
+        },
+        comments: function () {
+            return comments;
+        },
+        annotations: function () {
+            return annotations;
         },
         end: end,
         resign: function () {
