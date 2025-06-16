@@ -1695,12 +1695,15 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi,'$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
+            if (ms.includes('{')&&ms.includes('}')){
+
+            var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
             console.log(ams0);
             console.log(ms);
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
             ms = ms.replaceAll(' {','{');
+            }
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
