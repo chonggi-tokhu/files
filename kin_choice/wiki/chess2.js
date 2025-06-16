@@ -1696,6 +1696,8 @@ var Chess = function (fen) {
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
             var ams0 = ms.replace(/(\{[^}]+\})+?/g, '$1');
+            console.log(ams0);
+            console.log(ms);
             ms = ms.replace(ams0,ams0.replace(/\s+/,'__'));
 
             /* delete recursive annotation variations */
