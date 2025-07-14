@@ -1695,6 +1695,7 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
+            function delete_spaces_in_comment(ms,inc,lim){
             if (ms.includes('{')&&ms.includes('}')){
 
             var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
@@ -1703,7 +1704,12 @@ var Chess = function (fen) {
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
             ms = ms.replaceAll(' {','{');
+            if (ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((!inc&&!lim)&&true ) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
+                ms = delete_spaces_in_comment(ms,inc+1,lim);
             }
+            }
+            return ms;}
+            ms = delete_spaces_in_comment(ms,0,10000);
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
