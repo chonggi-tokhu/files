@@ -1695,7 +1695,7 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            var ms0 = ms.match(/(.*?)\{(.*?)\}(.*)/gmi);
+            var ms0 = ms.match(/\{(.*?)\}/gmi);
             var ms1 = ms;
             if (ms.includes('{')&&ms.includes('}') && ms0 !==null){
             ms0.forEach((val,idx,arr)=>{
