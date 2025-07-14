@@ -1706,13 +1706,13 @@ var Chess = function (fen) {
             ms = ms.replaceAll(' {','{');
             console.log(ms);
             console.log(ms.replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2'));
-            if (ms.replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
+            if (ms.replace(ams0,'').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
                 console.log('aaa');
                 ms = delete_spaces_in_comment(ms,inc+1,lim);
             }
             }
             return ms;}
-            ms = delete_spaces_in_comment(ms,false,false);
+            ms = delete_spaces_in_comment(ms,0,10000);
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
