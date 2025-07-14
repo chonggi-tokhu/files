@@ -1695,25 +1695,24 @@ var Chess = function (fen) {
             /* delete header to get the moves */
             var ms = pgn.replace(header_string, '').replace(new RegExp(mask(newline_char), 'g'), ' ');
             /* delete comments */
-            function delete_spaces_in_comment(ms,inc,lim){
-            if (ms.includes('{')&&ms.includes('}')){
-
-            var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
+            var ms0 = ms.match(/(.*?)\{(.*?)\}(.*)/gmi);
+            var ms1 = ms;
+            if (ms.includes('{')&&ms.includes('}') && ms0 !==null){
+            ms0.forEach((val,idx,arr)=>{
+                //var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
+                var ams0 = val;
             console.log(ams0);
             console.log(ms); 
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
             ms = ms.replaceAll(' {','{');
-            console.log(ms);
-            console.log(ms.replaceAll(ams0.replaceAll(/\s/gmi,'__'), ''));
+            });
+            
+            //console.log(ms);
+            //console.log(ms.replaceAll(ams0.replaceAll(/\s/gmi,'__'), ''));
             //console.log(ms.replace(ams0.replaceAll(/\s/gmi,'__'), '').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2'))
-            if (ms.replace(ams0.replaceAll(/\s/gmi,'__'), '').replace('{}','').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
-                console.log('aaa');
-                ms = delete_spaces_in_comment(ms,inc+1,lim);
+            
             }
-            }
-            return ms;}
-            ms = delete_spaces_in_comment(ms,0,500);
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
