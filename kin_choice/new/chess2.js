@@ -1713,7 +1713,7 @@ var Chess = function (fen) {
             }
             }
             return ms;}
-            ms = delete_spaces_in_comment(ms,0,10000);
+            ms = delete_spaces_in_comment(ms,0,500);
 
             /* delete recursive annotation variations */
             var rav_regex = /(\([^\(\)]+\))+?/g
