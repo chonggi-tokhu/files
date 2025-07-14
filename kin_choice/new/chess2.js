@@ -1707,7 +1707,7 @@ var Chess = function (fen) {
             console.log(ms);
             console.log(ms.replaceAll(ams0.replaceAll(/\s/gmi,'__'), ''));
             console.log(ms.replace(ams0.replaceAll(/\s/gmi,'__'), '').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2'))
-            if (ms.replace(ams0.replaceAll(/\s/gmi,'__'), '').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
+            if (ms.replace(ams0.replaceAll(/\s/gmi,'__'), '').replace('{}','').replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
                 console.log('aaa');
                 ms = delete_spaces_in_comment(ms,inc+1,lim);
             }
