@@ -1700,7 +1700,7 @@ var Chess = function (fen) {
 
             var ams0 = ms.replace(/(.*?)\{(.*?)\}(.*)/gmi, '$2'); /*ms.replace(/(\{[^}]+\})+?/g, '$1');*/
             console.log(ams0);
-            console.log(ms);
+            console.log(ms); 
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
             ms = ms.replaceAll(' {','{');
