@@ -1704,7 +1704,8 @@ var Chess = function (fen) {
             ms = ms.replace(ams0,ams0.replaceAll(/\s/gmi,'__'));
             console.log(ms);
             ms = ms.replaceAll(' {','{');
-            if (ms.replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true ) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
+            console.log(ms.replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2'));
+            if (ms.replaceAll(/(.*?)\{(.*?)\}(.*)/gmi, '$2').includes(' ') && (((typeof inc!=='number'&&typeof lim!=='number')&&true) || (((typeof inc==='number'&&typeof lim==='number')&&inc<=lim)))){
                 console.log('aaa');
                 ms = delete_spaces_in_comment(ms,inc+1,lim);
             }
