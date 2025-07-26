@@ -908,8 +908,11 @@
                 tab = class {
                     constructor(eltostyle, options) {
                         this.el = (checkString(eltostyle)) ? document.getElementById(eltostyle) : (eltostyle instanceof HTMLElement) ? eltostyle : null;
-                        this.options = options;
+                        this.options = checkObj(options) ? options : {};
                         this.oneofthemisshownalways = (checkObj(this.options)) ? (typeof this.options.onemustbeshown === 'boolean') ? this.options.mustonebeshown : false : false;
+                        if (typeof this.options.show_by_hash != 'boolean') {
+                            this.options.show_by_hash = true;
+                        }
                         if (this.el != null) {
                             var tabs_group = this.el.getEl_Class("tabs_group").toArray()[0];
                             var tab_select_group = this.el.getEl_Class("tab_select").toArray()[0];
@@ -1417,18 +1420,16 @@
                     Array.from(password_inputs).forEach((val, idx, arr) => {
                         thisobj.password_inputs.push(new thisobj.password_input(val, { mode: 'password' }));
                     });
-                    window.addEventListener("load", function (ev) {
-                        var parsedhashtext = new URL(decodeURI(window.location.href)).hash.replace('#', '');
-                        if (parsedhashtext != undefined && parsedhashtext != null && parsedhashtext != "") {
-                            thisobj.tabmenus.forEach(function (val, idx, arr) {
-                                val.tabs_and_tabselects.forEach(function (val1, idx1, arr1) {
-                                    if (parsedhashtext == val1.tab.id) {
-                                        val.showtab(idx1);
-                                    }
-                                });
+                    var parsedhashtext = new URL(decodeURI(window.location.href)).hash.replace('#', '');
+                    if (parsedhashtext != undefined && parsedhashtext != null && parsedhashtext != "") {
+                        thisobj.tabmenus.filter(val => val?.options?.show_by_hash).forEach(function (val, idx, arr) {
+                            val.tabs_and_tabselects.forEach(function (val1, idx1, arr1) {
+                                if (parsedhashtext == val1.tab.id) {
+                                    val.showtab(idx1);
+                                }
                             });
-                        }
-                    });
+                        });
+                    }
                 };
             },
             ColourgreyShorterJS: class extends ColourgreyShorterJSPR {

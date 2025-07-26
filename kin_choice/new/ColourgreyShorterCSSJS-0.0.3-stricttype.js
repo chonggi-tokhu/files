@@ -18,7 +18,7 @@
  * 
  * 0.0.3
  */
-(function (gTh, CGRshorter) { "object" === typeof exports && "undefined" != typeof module ? module.exports = CGRshorter() : "function" === typeof define && define.amd ? define(CGRshorter) : (gTh = "undefined" != typeof globalThis ? globalThis : gTh || self).ColourgreyShorterJS = CGRshorter() })(this, function () {
+(function (gTh, CGRshorter) { "object" === typeof exports && "undefined" !== typeof module ? module.exports = CGRshorter() : "function" === typeof define && define.amd ? define(CGRshorter) : (gTh = "undefined" !== typeof globalThis ? globalThis : gTh || self).ColourgreyShorterJS = CGRshorter() })(this, function () {
     function returnAllInOneArr(arr) {
         /*
          * Use Array.prototype.flat instead of it.
@@ -41,7 +41,7 @@
         return rtv;
     };
     function checkObj(param0) {
-        if (typeof param0 === 'object' && param0 != null) {
+        if (typeof param0 === 'object' && param0 !== null) {
             return true;
         } else {
             return false;
@@ -218,7 +218,7 @@
         return rtbool;
     };
     function checkStringandifItisnotanEmptyStr(param0) {
-        return (checkString(param0) && param0 != '');
+        return (checkString(param0) && param0 !== '');
     };
     function checkStr(param0) {
         return checkString(param0);
@@ -522,7 +522,7 @@
     String.prototype.toIntegerNumber = function () {
         var thisstring = new String(this);
         for (var i = 0; i < this.length; i++) {
-            if (isNaN(parseInt(thisstring[i])) && thisstring[i] != `.`) {
+            if (isNaN(parseInt(thisstring[i])) && thisstring[i] !== `.`) {
                 thisstring = thisstring.replace(thisstring[i], '');
             }
         }
@@ -599,23 +599,23 @@
     };
     HTMLElement.prototype.getEl_Id = function (IdParam) {
         var id = (checkString(IdParam)) ? IdParam : false;
-        return (id != false) ? this.getElementById(IdParam) : null;
+        return (id !== false) ? this.getElementById(IdParam) : null;
     };
     Document.prototype.getEl_Id = function (IdParam) {
         var id = (checkString(IdParam)) ? IdParam : false;
-        return (id != false) ? this.getElementById(IdParam) : null;
+        return (id !== false) ? this.getElementById(IdParam) : null;
     };
     HTMLElement.prototype.getEl_Class = function (classNameParam) {
         var className = (checkString(classNameParam)) ? classNameParam : false;
-        return (className != false) ? this.getElementsByClassName(className) : null;
+        return (className !== false) ? this.getElementsByClassName(className) : null;
     };
     Document.prototype.getEl_Class = function (classNameParam) {
         var className = (checkString(classNameParam)) ? classNameParam : false;
-        return (className != false) ? this.getElementsByClassName(className) : null;
+        return (className !== false) ? this.getElementsByClassName(className) : null;
     };
     HTMLElement.prototype.getEl_Class_Arr = function (cname, optionparam) {
         var rtv = [];
-        if (checkStringandifItisnotanEmptyStr(cname) && document.getEl_Class(cname) instanceof HTMLElement && document.getEl_Class(cname) != null) {
+        if (checkStringandifItisnotanEmptyStr(cname) && document.getEl_Class(cname) instanceof HTMLElement && document.getEl_Class(cname) !== null) {
             var list0 = document.getEl_Class(cname);
             var options = {
                 parentElement: document,
@@ -654,19 +654,19 @@
     };
     HTMLElement.prototype.getEl_TagName = function (tagNameParam) {
         var tagName = (checkString(tagNameParam)) ? tagNameParam : false;
-        return (tagName != false) ? this.getElementsByTagName(tagName) : null;
+        return (tagName !== false) ? this.getElementsByTagName(tagName) : null;
     };
     Document.prototype.getEl_TagName = function (tagNameParam) {
         var tagName = (checkString(tagNameParam)) ? tagNameParam : false;
-        return (tagName != false) ? this.getElementsByTagName(tagName) : null;
+        return (tagName !== false) ? this.getElementsByTagName(tagName) : null;
     };
     HTMLElement.prototype.getEl_CSS_Selector = function (selectorParam) {
         var selector = (checkString(selectorParam)) ? selectorParam : false;
-        return (selector != false) ? this.querySelectorAll(selectorParam) : null;
+        return (selector !== false) ? this.querySelectorAll(selectorParam) : null;
     };
     Document.prototype.getEl_CSS_Selector = function (selectorParam) {
         var selector = (checkString(selectorParam)) ? selectorParam : false;
-        return (selector != false) ? this.querySelectorAll(selectorParam) : null;
+        return (selector !== false) ? this.querySelectorAll(selectorParam) : null;
     };
     HTMLElement.prototype.stylehidden = false;
     HTMLElement.prototype.show_hide = function (displaymodeparam) {
@@ -700,7 +700,7 @@
     };
     HTMLElement.prototype.getEl_CSS = function (selectorParam) {
         var newnodelist = (checkString(selectorParam)) ? this.getEl_CSS_Selector(selectorParam) : null;
-        if (newnodelist != null) {
+        if (newnodelist !== null) {
             var convertedFromNodeListToHTMLCollection = {
                 length: newnodelist.length,
                 item: function (idx) {
@@ -729,7 +729,7 @@
     };
     Document.prototype.getEl_CSS = function (selectorParam) {
         var newnodelist = (checkString(selectorParam)) ? this.getEl_CSS_Selector(selectorParam) : null;
-        if (newnodelist != null) {
+        if (newnodelist !== null) {
             var convertedFromNodeListToHTMLCollection = {
                 length: newnodelist.length,
                 item: function (idx) {
@@ -773,12 +773,12 @@
         if (!checkStringandifItisnotanEmptyStr(thistargetClass)) {
             thistargetClass = '';
         };
-        if (thistargetId != '') {
+        if (thistargetId !== '') {
             this.addEventListener("click", function (ev) {
                 thisobj.let_anEl_shown_hidden(document.getElementById(thistargetId), { display: "" });
             });
 
-        } else if (thistargetClass != '') {
+        } else if (thistargetClass !== '') {
             this.addEventListener("click", function (ev) {
                 thisobj.parentElement.getElementsByClassName(thistargetClass)[0].show_hide("");
             });
@@ -805,7 +805,7 @@
             cookies[i] = (checkObjandItsProperty(cookies[i], 'cookie_name', function (checkingstrparam) { return (typeof checkingstrparam === 'string' || checkingstrparam instanceof String) }) && checkObjandItsProperty(cookies[i], 'cookie_value', function (checkingstrparam) { return checkString(checkingstrparam) })) ? cookies[i] : null;
         }
         for (var i1 = 0; i1 < cookies.length; i1++) {
-            if (cookies[i1] != null) {
+            if (cookies[i1] !== null) {
                 this.cookie = setCookie(this.cookie, cookies[i1].cookie_name + '=' + cookies[i1].cookie_value);
                 console.log(setCookie(this.cookie, cookies[i1].cookie_name + '=' + cookies[i1].cookie_value));
             }
@@ -908,12 +908,15 @@
                 tab = class {
                     constructor(eltostyle, options) {
                         this.el = (checkString(eltostyle)) ? document.getElementById(eltostyle) : (eltostyle instanceof HTMLElement) ? eltostyle : null;
-                        this.options = options;
+                        this.options = checkObj(options) ? options : {};
                         this.oneofthemisshownalways = (checkObj(this.options)) ? (typeof this.options.onemustbeshown === 'boolean') ? this.options.mustonebeshown : false : false;
-                        if (this.el != null) {
+                        if (typeof this.options.show_by_hash !== 'boolean') {
+                            this.options.show_by_hash = true;
+                        }
+                        if (this.el !== null) {
                             var tabs_group = this.el.getEl_Class("tabs_group").toArray()[0];
                             var tab_select_group = this.el.getEl_Class("tab_select").toArray()[0];
-                            /*if (typeof this.options==='object' && 'undefined' != typeof this.options){
+                            /*if (typeof this.options==='object' && 'undefined' !== typeof this.options){
                                 if (this.options){}
                             }*/
                             var tabs = [];
@@ -1042,14 +1045,14 @@
                                 this.bodyEl.classList.add('body');
                             }
                         }
-                        if (this.el != null) {
+                        if (this.el !== null) {
                             var thisobj = this;
                             this.targetels = this.el.getEl_Attr("data-cgrshorter-action", "popover");
                             this.newpopovers = [];
                             this.targetels.forEach(function (val, idx, arr) {
                                 val.addEventListener("click", function (ev) {
-                                    if (val.getEl_Class("popover-box") != null && val.getEl_Class("popover-box").length > 0) {
-                                        if (thisobj.newpopovers[idx] != null || document.querySelector('.body').classList.contains("shadowbody")) {
+                                    if (val.getEl_Class("popover-box") !== null && val.getEl_Class("popover-box").length > 0) {
+                                        if (thisobj.newpopovers[idx] !== null || document.querySelector('.body').classList.contains("shadowbody")) {
                                             document.querySelector('.body').classList.remove("shadowbody");
                                             thisobj.newpopovers[idx].remove();
                                         }
@@ -1066,7 +1069,7 @@
                         var newc2 = '';
                         var i43 = 0;
                         for (var i = 0; i < newc.length; i++) {
-                            if (newc[i] === `|` && newc[i - 1] != `\\`) {
+                            if (newc[i] === `|` && newc[i - 1] !== `\\`) {
                                 if (newc[i - 2] + newc[i - 1] === 'br') {
                                     i43 += 2;
                                 }
@@ -1160,20 +1163,20 @@
                         this.el = (checkString(elarg)) ? document.getElementById(elarg) : (elarg instanceof HTMLElement) ? elarg : document.getElementById(elarg);
                         this.options = (checkObj(options) && !checkArr(options)) ? options : {};
                         var thisobj = this;
-                        if (this.el != null) {
+                        if (this.el !== null) {
 
                             var paragraphspr = this.el.querySelectorAll('div.para');
                             this.paragraphspr = paragraphspr;
                             var paragraphs = [];
                             paragraphspr.forEach(function (val, idx, arr) {
-                                if (val.querySelector('div.paracontent') != null && val.querySelector('h1 .parafolder,h2 .parafolder,h3 .parafolder,h4 .parafolder,h5 .parafolder,h6 .parafolder') != null) {
+                                if (val.querySelector('div.paracontent') !== null && val.querySelector('h1 .parafolder,h2 .parafolder,h3 .parafolder,h4 .parafolder,h5 .parafolder,h6 .parafolder') !== null) {
                                     var folded = val.getAttribute("data-folded");
                                     var folded2 = (checkString(folded)) ? (folded === 'true') ? true : false : false;
                                     if (thisobj.options.folded === true) {
                                         folded2 = true;
                                     }
                                     var id0 = val.id;
-                                    var id = (checkString(id0)) ? (id0 != '') ? id0 : idx : idx;
+                                    var id = (checkString(id0)) ? (id0 !== '') ? id0 : idx : idx;
                                     paragraphs.push({ contentel: val.querySelector('div.paracontent'), folderel: val.querySelector('h1 .parafolder,h2 .parafolder,h3 .parafolder,h4 .parafolder,h5 .parafolder,h6 .parafolder'), paragraph: val, folded: folded2, id: id });
                                 }
                             });
@@ -1181,7 +1184,7 @@
                             thisobj = this;
                             this.paragraphs.forEach(function (val, idx, arr) {
                                 val.folderel.addEventListener("click", function (ev) {
-                                    var id = (checkString(val.paragraph.id)) ? (val.paragraph.id != '') ? val.paragraph.id : idx : idx;
+                                    var id = (checkString(val.paragraph.id)) ? (val.paragraph.id !== '') ? val.paragraph.id : idx : idx;
                                     thisobj.showandhide(id);
                                 });
                             });
@@ -1236,15 +1239,15 @@
                     constructor(elarg, options) {
                         this.el = checkString(elarg) ? document.getElementById(elarg) : (elarg instanceof HTMLElement) ? elarg : document.getElementById(elarg);
                         this.options = (checkObj(options)) ? options : { folded: true };
-                        if (typeof this.options['folded'] != 'boolean') {
+                        if (typeof this.options['folded'] !== 'boolean') {
                             this.options.folded = true;
                         }
 
                         this.foldingEls = [];
                         var thisobj = this;
-                        if (this.el != null && this.el != undefined && this.el instanceof HTMLElement) {
+                        if (this.el !== null && this.el !== undefined && this.el instanceof HTMLElement) {
                             var foldingElsinfoldersWrap = this.el.querySelectorAll(`.wiki.folding`);
-                            if (foldingElsinfoldersWrap != null) {
+                            if (foldingElsinfoldersWrap !== null) {
                                 if (foldingElsinfoldersWrap.length > 0) {
                                     foldingElsinfoldersWrap.forEach(function (el, key, par) {
                                         var alreadyfolded = thisobj.options.folded;
@@ -1258,7 +1261,7 @@
                                         }
                                         var foldercontrol = el.querySelector(`.folding_control`);
                                         var foldercontent = el.querySelector(`.folding_content`);
-                                        if ((foldercontrol != null && foldercontrol != undefined && foldercontrol instanceof HTMLElement) && (foldercontent != null && foldercontent != undefined && foldercontent instanceof HTMLElement)) {
+                                        if ((foldercontrol !== null && foldercontrol !== undefined && foldercontrol instanceof HTMLElement) && (foldercontent !== null && foldercontent !== undefined && foldercontent instanceof HTMLElement)) {
                                             thisobj.foldingEls.push({ control: foldercontrol, content: foldercontent, folded: alreadyfolded });
                                         }
                                     });
@@ -1417,18 +1420,16 @@
                     Array.from(password_inputs).forEach((val, idx, arr) => {
                         thisobj.password_inputs.push(new thisobj.password_input(val, { mode: 'password' }));
                     });
-                    window.addEventListener("load", function (ev) {
-                        var parsedhashtext = new URL(decodeURI(window.location.href)).hash.replace('#', '');
-                        if (parsedhashtext != undefined && parsedhashtext != null && parsedhashtext != "") {
-                            thisobj.tabmenus.forEach(function (val, idx, arr) {
-                                val.tabs_and_tabselects.forEach(function (val1, idx1, arr1) {
-                                    if (parsedhashtext === val1.tab.id) {
-                                        val.showtab(idx1);
-                                    }
-                                });
+                    var parsedhashtext = new URL(decodeURI(window.location.href)).hash.replace('#', '');
+                    if (parsedhashtext !== undefined && parsedhashtext !== null && parsedhashtext !== "") {
+                        thisobj.tabmenus.filter(val => val?.options?.show_by_hash).forEach(function (val, idx, arr) {
+                            val.tabs_and_tabselects.forEach(function (val1, idx1, arr1) {
+                                if (parsedhashtext === val1.tab.id) {
+                                    val.showtab(idx1);
+                                }
                             });
-                        }
-                    });
+                        });
+                    }
                 };
             },
             ColourgreyShorterJS: class extends ColourgreyShorterJSPR {
