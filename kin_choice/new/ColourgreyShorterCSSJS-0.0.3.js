@@ -1097,9 +1097,9 @@
                         if (el instanceof HTMLElement) {
                             var newEl = document.createElement("div");
                             newEl.setAttribute("class", "popover-box");
-                            newEl.innerHTML = `<p onclick="this.parentElement.remove();document.querySelector('.body').classList.remove('shadowbody')" style="position:absolute;right:0px;width:1.2rem" role="button">&times;</p>` + newc2;
+                            newEl.innerHTML = `<p onclick="document.querySelector('.body').classList.remove('shadowbody');this.parentElement.remove();" style="position:absolute;right:0px;width:1.2rem" role="button">&times;</p>` + newc2;
                             if (this.textpopover) {
-                                newEl.innerHTML = `<p class="popver-para"><span onclick="this.parentElement.remove();document.querySelector('.body').classList.remove('shadowbody')" style="position:absolute;right:0px;">&times;</span><br><span class="popover-text" role="button">${newc2}</span></p>`;
+                                newEl.innerHTML = `<p class="popver-para"><span onclick="document.querySelector('.body').classList.remove('shadowbody');this.parentElement.remove();" style="position:absolute;right:0px;">&times;</span><br><span class="popover-text" role="button">${newc2}</span></p>`;
                             }
                             var newEla = document.body.appendChild(newEl);
                             document.querySelector('.body').classList.add("shadowbody");
