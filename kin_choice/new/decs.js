@@ -1,6 +1,5 @@
 (function (gTh, ConvertDec) { "object" == typeof exports && "undefined" != typeof module ? module.exports = ConvertDec() : "function" == typeof define && define.amd ? define(ConvertDec) : (gTh = "undefined" != typeof globalThis ? globalThis : gTh || self).CGRConvertDec = ConvertDec() })(this, function () {
 
-    function cgr_convert_dec() {
     /* 나 영어 잘 못함 */
     function dec_to_another(dectoconvert, system) {
         var number = (typeof dectoconvert === 'number') ? dectoconvert : 10;
@@ -93,8 +92,5 @@
             this.str = (typeof newstr === 'string') ? newstr : str;
         },
     }
-    return { converter: obj, convert: convert, systemstr: systemstr, str: str, dec_to_another: dec_to_another, another_to_dec: another_to_dec };
-}
-module.exports = cgr_convert_dec;
     return { converter: obj, convert: convert, systemstr: systemstr, str: str, dec_to_another: dec_to_another, another_to_dec: another_to_dec };
 });
