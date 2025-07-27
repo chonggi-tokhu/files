@@ -1,5 +1,4 @@
-(function (gTh, ConvertDec) { "object" == typeof exports && "undefined" != typeof module ? module.exports = ConvertDec() : "function" == typeof define && define.amd ? define(ConvertDec) : (gTh = "undefined" != typeof globalThis ? globalThis : gTh || self).CGRConvertDec = ConvertDec() })(this, function () {
-
+function cgr_convert_dec() {
     /* 나 영어 잘 못함 */
     function dec_to_another(dectoconvert, system) {
         var number = (typeof dectoconvert === 'number') ? dectoconvert : 10;
@@ -26,7 +25,7 @@
         var bool0 = dec_to_alphabets(number, function (i0param) {
             specialarr.push(i0param);
         });
-        console.log(specialarr);
+        //console.log(specialarr);
         if (bool0) {
             var i4 = 0;
             for (var i2 = 0; i2 < specialarr.length; i2++) {
@@ -34,16 +33,18 @@
                     for (i4; i4 < specialarr[i2]; i4++) {
                         if (typeof specialarr2[i4] !== 'number') {
                             specialarr2[i4] = 0;
-                            console.log(i4);
+                            //console.log(i4);
                         }
                     }
-                    specialarr2[specialarr[i2]] = 1;
+                    if (specialarr[i2] !== 0) {
+                        specialarr2[specialarr[i2]] = 1;
+                    }
                 } else {
                     specialarr2[specialarr[i2]] += 1;
                 }
             }
             for (var i3 = 0; i3 < specialarr2.length; i3++) {
-                console.log(specialarr2[i3]);
+                //console.log(specialarr2[i3]);
                 numberstr = specialnumbs[specialarr2[i3]] + numberstr;
             }
         }
@@ -83,7 +84,7 @@
             if (isNaN(Number(whichfrom)) || isNaN(Number(whichto)) || !(typeof will_be_converted === 'string' || will_be_converted instanceof String)) {
                 return will_be_converted || false;
             }
-            console.log(will_be_converted);
+            //console.log(will_be_converted);
             return dec_to_another(another_to_dec(will_be_converted, systemstr(Number(whichfrom), this.str)), systemstr(Number(whichto), this.str));
         },
         change_numb_letters: function (newstr) {
@@ -91,4 +92,5 @@
         },
     }
     return { converter: obj, convert: convert, systemstr: systemstr, str: str, dec_to_another: dec_to_another, another_to_dec: another_to_dec };
-});
+}
+module.exports = cgr_convert_dec;
